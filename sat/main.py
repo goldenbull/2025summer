@@ -1,3 +1,5 @@
+import dpll
+
 lines = open("problems/test.cnf", "rt").readlines()
 
 clauses = []
@@ -14,7 +16,9 @@ for s in lines:
         clause = [int(v) for v in ss[:-1]]
         clauses.append(clause)
 
-print(clauses)
+result = dpll.dpll_reduce([], clauses)
+print(result)
+exit()
 
 for i in range(pow(2, literal_cnt)):
     result = 1
@@ -28,6 +32,7 @@ for i in range(pow(2, literal_cnt)):
                 value = 1 - value
             clause_sum += value
         result *= clause_sum
+
         if result == 0:
             break
 
@@ -36,6 +41,6 @@ for i in range(pow(2, literal_cnt)):
         for i in range(literal_cnt):
             if x[i] == 1:
                 print(i + 1, end=" ")
-                print()
+        print()
 
 print("end")
