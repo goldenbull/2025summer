@@ -22,4 +22,5 @@ def dpll_reduce(cur_literals: list[int], cur_clauses: list[list[int]]) -> list[i
     # 单子句策略
     changed=True
     while changed:
+        changed=False
         
