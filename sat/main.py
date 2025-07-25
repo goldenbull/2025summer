@@ -1,6 +1,6 @@
 import dpll
 
-lines = open("problems/test.cnf", "rt").readlines()
+lines = open("problems/SAT测试备选算例/满足算例/M/bart17.shuffled-231.cnf", "rt").readlines()
 
 clauses = []
 for s in lines:
@@ -18,29 +18,5 @@ for s in lines:
 
 result = dpll.dpll_reduce([], clauses)
 print(result)
+
 exit()
-
-for i in range(pow(2, literal_cnt)):
-    result = 1
-    x = [int(c) for c in format(i, f"0{literal_cnt}b")]
-    for clause in clauses:
-        clause_sum = 0
-        for literal in clause:
-            pos = abs(literal) - 1
-            value = x[pos]
-            if literal < 0:
-                value = 1 - value
-            clause_sum += value
-        result *= clause_sum
-
-        if result == 0:
-            break
-
-    if result != 0:
-        print(x)
-        for i in range(literal_cnt):
-            if x[i] == 1:
-                print(i + 1, end=" ")
-        print()
-
-print("end")
