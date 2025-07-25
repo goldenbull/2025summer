@@ -1,3 +1,5 @@
+import logging
+
 def clauses_to_dict(clauses: list[list[int]]) -> dict[int, list[list[int]]]:
     l2c_tbl = dict()
     for c in clauses:
@@ -39,6 +41,7 @@ def print_solution(solution:list[int]):
 
 
 def dpll_reduce(cur_literals: list[int], cur_clauses: list[list[int]]) -> bool:
+    logging.info(f"dpll_reduce, cur_literals: cnt={len(cur_literals)}, {cur_literals}")
     new_clauses = [c.copy() for c in cur_clauses]
 
     # 通过单子句规则化简
