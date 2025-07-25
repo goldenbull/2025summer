@@ -1,3 +1,4 @@
+# 将列表转换为字典
 def clauses_to_dict(clauses: list[list[int]]) -> dict[int, list[list[int]]]:
     l2c_tbl = dict()
     for c in clauses:
@@ -8,23 +9,28 @@ def clauses_to_dict(clauses: list[list[int]]) -> dict[int, list[list[int]]]:
     return l2c_tbl
 
 
+# 赋值
 def assign(x: int, _clauses: list[list[int]]) -> list[list[int]]:
-    clauses = [c.copy() for c in _clauses]
-    for c in clauses[:]:
+    new_clauses = []
+    for c in _clauses:
         if x in c:
-            clauses.remove(c)
-        elif -x in c:
-            c.remove(-x)
-        else:
-            ...
-    return clauses
+            continue  # 子句被满足
+        new_clause = [l for l in c if l != -x]
+        new_clauses.append(new_clause)
+    return new_clauses
 
 
-def find_literal(clauses_dict: dict[int, list[list[int]]]) -> int:
-    counters = sorted([(len(v), k) for k, v in clauses_dict.items()])
-    return counters[0][1]
+# 找到出现次数最多的文字
+def find_literal(clauses: list[list[int]]) -> int:
+    freq = {}
+    for c in clauses:
+        for lit in c:
+            freq[lit] = freq.get(lit, 0) + 1
+    return max(freq.items(), key=lambda x: x[1])[0] if freq else 0
 
-def print_solution(solution:list[int]):
+
+# 打印结果
+def print_solution(solution: list[int]):
     # 将解转换为字典 {变量: 赋值}
     assignment = {}
     for lit in solution:
@@ -38,38 +44,36 @@ def print_solution(solution:list[int]):
     print("Solution:", result)
 
 
+# dpll函数
 def dpll_reduce(cur_literals: list[int], cur_clauses: list[list[int]]) -> bool:
-    new_clauses = [c.copy() for c in cur_clauses]
-
     # 通过单子句规则化简
-    while any(len(c) == 1 for c in new_clauses):
-        single_literal_clauses = [c for c in new_clauses if len(c) == 1]
+    while any(len(c) == 1 for c in cur_clauses):
+        single_literal_clauses = [c for c in cur_clauses if len(c) == 1]
         single_literal = single_literal_clauses[0][0]
-        new_clauses = assign(single_literal, new_clauses)
         cur_literals.append(single_literal)
+        cur_clauses = assign(single_literal, cur_clauses)
 
-        if not new_clauses:  # 所有子句被满足
+        if not cur_clauses:  # 所有子句被满足
             print_solution(cur_literals)
             return True
-        if [] in new_clauses:  # 存在空子句（矛盾）
+        if [] in cur_clauses:  # 存在空子句（矛盾）
             return False
 
     # 判断是否结束
-    if not new_clauses:
+    if not cur_clauses:
         print_solution(cur_literals)
         return True
-    if [] in new_clauses:
+    if [] in cur_clauses:
         return False
 
     # 寻找子句最少的文字
-    clauses_dict = clauses_to_dict(new_clauses)
-    next_ltl = find_literal(clauses_dict)
+    next_ltl = find_literal(cur_clauses)
 
     # 赋值为true
-    reduced_clauses_true = assign(next_ltl, new_clauses)
+    reduced_clauses_true = assign(next_ltl, cur_clauses)
     if dpll_reduce(cur_literals + [next_ltl], reduced_clauses_true):
         return True
 
     # 赋值为false
-    reduced_clauses_false = assign(-next_ltl, new_clauses)
+    reduced_clauses_false = assign(-next_ltl, cur_clauses)
     return dpll_reduce(cur_literals + [-next_ltl], reduced_clauses_false)
