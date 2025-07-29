@@ -31,6 +31,20 @@ def find_literal(clauses: list[list[int]]) -> int:
     return max(freq.items(), key=lambda x: x[1])[0]
 
 
+def print_solution(solution: list[int]):
+    # 将解转换为字典 {变量: 赋值}
+    assignment = {}
+    for lit in solution:
+        var = abs(lit)
+        val = 1 if lit > 0 else 0
+        assignment[var] = val
+
+    # 按变量顺序打印
+    sorted_vars = sorted(assignment.keys())
+    result = " ".join(f"{var}:{assignment[var]}" for var in sorted_vars)
+    print("Solution:", result)
+
+
 # dpll函数
 def dpll_reduce(cur_literals: list[int], cur_clauses: list[list[int]]) -> list[int] or None:
     logging.info(f"dpll_reduce, cur_literals: cnt={len(cur_literals)}, {cur_literals}")
