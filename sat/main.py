@@ -1,14 +1,14 @@
 import logging
+import dpll_1
 import dpll
-
-
-lines = open("problems/SAT测试备选算例/满足算例/M/bart17.shuffled-231.cnf", "rt").readlines()
+import time
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG)
     logging.info("start")
-    lines = open("problems/SAT测试备选算例/其它可供选择使用的算例/unif-k5-r21.117-v350-c7391-S5200354631670098160.cnf", "rt").readlines()
-
+    # fname = "problems/SAT测试备选算例/满足算例/M/ec-mod2c-rand3bip-sat-250-2.shuffled-as.sat05-2534.cnf"
+    fname = "e:/workspace/s.cnf"
+    lines = open(fname, "rt").readlines()
 
     clauses = []
     for s in lines:
@@ -24,6 +24,13 @@ if __name__ == '__main__':
             clause = [int(v) for v in ss[:-1]]
             clauses.append(clause)
 
-
-result = dpll.dpll_reduce([], clauses)
-print(result)
+    start_time = time.time()  # 记录开始时间
+    result = dpll.dpll_reduce([], clauses)
+    end_time = time.time()  # 记录结束时间
+    elapsed = end_time - start_time  # 计算耗时
+    # 输出结果和耗时
+    if result is not None:
+        print("满足解:", sorted(result, key=abs))
+    else:
+        print("无解")
+    print(f"执行时间: {elapsed:.4f}秒")
