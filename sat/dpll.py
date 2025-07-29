@@ -31,7 +31,6 @@ def find_literal(clauses: list[list[int]]) -> int:
     return max(freq.items(), key=lambda x: x[1])[0] if freq else 0
 
 
-# 打印结果
 def print_solution(solution: list[int]):
     # 将解转换为字典 {变量: 赋值}
     assignment = {}
