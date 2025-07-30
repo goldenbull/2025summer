@@ -1,7 +1,7 @@
 with open("problems/百分号数独游戏格局文件（设计要求的应用任务）/%-sudoku.txt", "r", encoding="utf-8") as f:
-    lines = f.readlines()[2:]  # 跳过前2行，读取剩余所有行
+    lines = f.readlines()  # 跳过前2行，读取剩余所有行
 
-n = 0
+n = -1
 line_n = lines[n]
 list_cnf = []
 
