@@ -1,40 +1,69 @@
-import logging
+import read_cnf
 import dpll
+import create_sudoku
+import sudoku_to_sat
 import time
 
-if __name__ == '__main__':
-    logging.basicConfig(level=logging.DEBUG)
-    logging.info("start")
-    # fname = "problems/SAT测试备选算例/满足算例/M/ec-mod2c-rand3bip-sat-250-2.shuffled-as.sat05-2534.cnf"
-    # fname = "problems/SAT测试备选算例/满足算例/M/m-mod2c-rand3bip-sat-220-3.shuffled-as.sat05-2490-311.cnf"
-    # fname = "problems/SAT测试备选算例/基准算例/功能测试/sat-20.cnf"
-    # fname = "problems/SAT测试备选算例/满足算例/L/eh-vmpc_25.renamed-as.sat05-1913-625.cnf"
-    # fname="problems/SAT测试备选算例/满足算例/S/problem2-50.cnf"
-    fname = "e:/workspace/s.cnf"
-
-    lines = open(fname, "rt").readlines()
-
-    clauses = []
-    for s in lines:
-        if s[0] == "c":
-            continue
-        elif s[0] == "p":
-            ss = s.strip().split()
-            literal_cnt = int(ss[2])
-            clause_cnt = int(ss[3])
-            print(literal_cnt, clause_cnt)
+print("Welcome!")
+while True:
+    print("\nSAT -- 1, %-Sudoku -- 2, exit -- 0")
+    op = input("Please choose a number: ")
+    if op == "1":
+        filename = input("Please input a filename: ")
+        cnf_clauses = read_cnf.read_file(filename)
+        start_time = time.time()  # 记录开始时间
+        result = dpll.dpll_reduce([], cnf_clauses)
+        end_time = time.time()  # 记录结束时间l
+        elapsed = end_time - start_time  # 计算耗时
+        if result is not None:
+            print("The solution is: ", sorted(result, key=abs))
         else:
-            ss = s.strip().split()
-            clause = [int(v) for v in ss[:-1]]
-            clauses.append(clause)
+            print("No solution found!")
+        print(f"(time cost: {elapsed:.4f}s)")
 
-    start_time = time.time()  # 记录开始时间
-    result = dpll.dpll_reduce([], clauses)
-    end_time = time.time()  # 记录结束时间
-    elapsed = end_time - start_time  # 计算耗时
-    # 输出结果和耗时
-    if result is not None:
-        print("满足解:", sorted(result, key=abs))
+    elif op == "2":
+        # 随机初始化数独游戏格局
+        start_time = time.time()
+        my_sudoku = create_sudoku.create_puzzle()
+        end_time = time.time()
+        elapsed = end_time - start_time
+        print(f"(time cost: {elapsed:.4f}s)")
+
+        # 将数独转化为sat并写入cnf文件
+        create_sudoku.create_sudoku_txt(my_sudoku)
+        filename = "my_sudoku.txt"
+        sudoku_to_sat.create_cnf(filename)
+        print("sudoku has been written in: my_sudoku.cnf")
+
+        # 输出结果
+        filename = "my_sudoku.cnf"
+        cnf_clauses = read_cnf.read_file(filename)
+        start_time = time.time()  # 记录开始时间
+        result = dpll.dpll_reduce([], cnf_clauses)
+        end_time = time.time()  # 记录结束时间
+        elapsed = end_time - start_time  # 计算耗时
+        if result is not None:
+            result = sorted(result, key=abs)
+            new_result = [x for x in result if x >= 0]
+            print("The solution is: ", new_result)
+        else:
+            print("No solution found!")
+
+        # 输出数独的解
+        matrix = [[0 for _ in range(9)] for _ in range(9)]
+        for num in new_result:
+            row = num // 100 - 1
+            col = (num // 10) % 10 - 1
+            value = num % 10
+
+            # 检查行列是否有效
+            if 0 <= row < 9 and 0 <= col < 9:
+                matrix[row][col] = value
+        create_sudoku.print_borad(matrix)
+        print(f"(time cost: {elapsed:.4f}s)")
+
+    elif op == "0":
+        print("Thank you!")
+
     else:
-        print("无解")
-    print(f"执行时间: {elapsed:.4f}秒")
+        print("Invalid input!")

@@ -47,7 +47,7 @@ def print_solution(solution: list[int]):
 
 # dpll函数
 def dpll_reduce(cur_literals: list[int], cur_clauses: list[list[int]]) -> list[int] or None:
-    logging.info(f"dpll_reduce, cur_literals: cnt={len(cur_literals)}, {cur_literals}")
+    # logging.info(f"dpll_reduce, cur_literals: cnt={len(cur_literals)}, {cur_literals}")
 
     # 通过单子句规则化简
     while any(len(c) == 1 for c in cur_clauses):

@@ -2,7 +2,7 @@ import copy
 import random
 
 
-# 目标生成一个数独，打印出来并生成数独文件
+# 目标生成一个百分号数独，打印出来并生成数独文件
 
 def get_box(r, c):
     return [(i, j)
@@ -15,6 +15,7 @@ rows = [[(r, c) for c in range(1, 10)] for r in range(1, 10)]
 cols = [[(r, c) for r in range(1, 10)] for c in range(1, 10)]
 boxes = [get_box(r, c) for r in [1, 4, 7] for c in [1, 4, 7]]
 pcf_boxes = [get_box(2, 2), get_box(6, 6)]
+pcf_centers = [(3, 3), (7, 7)]
 cross_line = [[(r, 10 - r) for r in range(1, 10)]]
 
 
@@ -38,27 +39,33 @@ def is_valid(sudoku, row, col, value):
     for i in range(9):
         if sudoku[row - 1][i] == value:
             return False
+
     # 检查列约束
     for j in range(9):
         if sudoku[j][col - 1] == value:
             return False
+
     # 检查九宫格约束
     x, y = 3 * ((row - 1) // 3), 3 * ((col - 1) // 3)
     for i in range(3):
         for j in range(3):
             if sudoku[x + i][y + j] == value:
                 return False
+
     # 检查百分号约束
-    if (row, col) in pcf_boxes:
-        x = 1 if (row + col) < 10 else 5
-        for i in range(3):
-            for j in range(3):
-                if sudoku[x + i][x + j] == value:
-                    return False
-    if (row, col) in cross_line:
+    for center_r, center_c in pcf_centers:
+        if abs(row - center_r) <= 1 and abs(col - center_c) <= 1:
+            for i in range(center_r - 1, center_r + 2):
+                for j in range(center_c - 1, center_c + 2):
+                    if sudoku[i - 1][j - 1] == value:
+                        return False
+
+    # 检查对角线约束
+    if row + col == 10:  # 副对角线
         for i in range(9):
             if sudoku[i][8 - i] == value:
                 return False
+
     return True
 
 
@@ -66,14 +73,14 @@ def is_valid(sudoku, row, col, value):
 def solve_sudoku(sudoku):
     for row in range(1, 10):
         for col in range(1, 10):
-            if sudoku[row-1][col-1] == 0:
-                for value in random.sample(range(1,10),9):  # 随机尝试数字
+            if sudoku[row - 1][col - 1] == 0:
+                for value in random.sample(range(1, 10), 9):  # 随机尝试数字
                     if is_valid(sudoku, row, col, value):  # 满足约束
-                        sudoku[row-1][col-1] = value
+                        sudoku[row - 1][col - 1] = value
                         if solve_sudoku(sudoku):  # 若合法，递归处理填好该格子后的数独
                             return True  # 递归返回真，找到解，直接返回
                         else:
-                            sudoku[row-1][col-1] = 0  # 无解，重置当前格子为0，尝试下一个数字
+                            sudoku[row - 1][col - 1] = 0  # 无解，重置当前格子为0，尝试下一个数字
                 return False
     return True
 
@@ -116,12 +123,13 @@ def set_value(row, col, value):
                 cell = board[(m + i), (m + j)]
                 if cell.value == 0 and value in cell.candidates:
                     cell.candidates.remove(value)
-    #处理对角线上其他格子
+    # 处理对角线上其他格子
     if (row, col) in cross_line:
-        for i in range(1,10):
-            cell = board[(i,10-i)]
+        for i in range(1, 10):
+            cell = board[(i, 10 - i)]
             if cell.value == 0 and value in cell.candidates:
                 cell.candidates.remove(value)
+
 
 # 随机填入一个格子
 def fill_one_cell():
@@ -139,31 +147,40 @@ def complete_sudoku():
     solve_sudoku(sudoku)
     return sudoku
 
-my_sudoku=complete_sudoku()
-print_borad(my_sudoku)
 
-#挖洞
-def dig_holes(sudoku,holes):
-    cells = [(i,j) for i in range(9) for j in range(9)]
+# 挖洞
+def dig_holes(sudoku, holes):
+    cells = [(i, j) for i in range(9) for j in range(9)]
     random.shuffle(cells)
-    for i,j in cells[:holes]:
+    puzzle = copy.deepcopy(sudoku)  # 保存完整解
+    for i, j in cells[:holes]:
+        temp = puzzle[i][j]
         sudoku[i][j] = 0
-    return sudoku
+        # 检查是否还有解
+        temp_copy = copy.deepcopy(puzzle)
+        if not solve_sudoku(temp_copy):
+            # 如果没有解，恢复这个数字
+            puzzle[i][j] = temp
+    return puzzle
 
-#生成挖洞后的数独
-print("\n")
-holes_num = random.randint(30,40)
-dig_holes(my_sudoku, holes_num)
-print_borad(my_sudoku)
 
-#生成数独文件
-print("\n")
-sudoku_list=[]
-for row in my_sudoku:
-    for num in row:
-        sudoku_list.append('.' if num==0 else str(num))
-result=''.join(sudoku_list)
-print(result)
-fout = open("e:/workspace/my_sudoku.txt", "wt")
-fout.write(result)
-fout.close()
+# 生成挖洞后的数独
+def create_puzzle():
+    my_sudoku = complete_sudoku()
+    holes_num = random.randint(30, 50)
+    dig_holes(my_sudoku, holes_num)
+    print("Randomly initialize the Sudoku game layout:")
+    print_borad(my_sudoku)
+    return my_sudoku
+
+
+# 生成数独文件
+def create_sudoku_txt(my_sudoku):
+    sudoku_list = []
+    for row in my_sudoku:
+        for num in row:
+            sudoku_list.append('.' if num == 0 else str(num))
+    result = ''.join(sudoku_list)
+    fout = open("my_sudoku.txt", "wt")
+    fout.write(result)
+    fout.close()
