@@ -37,7 +37,7 @@ class TokenKind(Enum):
     ELSE = 12
     WHILE = 13
     FOR = 14
-    DO = 15
+    VOID = 15
     BREAK = 16
     CONTINUE = 17
     RETURN = 18
@@ -74,7 +74,7 @@ class TokenKind(Enum):
     MACRO = 45
 
 
-keywords = {"int", "float", "long", "short", "char", "if", "else", "while", "for", "do", "break", "continue",
+keywords = {"int", "float", "long", "short", "char", "if", "else", "while", "for", "void", "break", "continue",
             "return", "unsigned"}
 operators = {"+", "-", "*", "/", "%", ">", "<", "==", ">=", "<=", "!=", "&&", "||", "="}  # 不包含逗号运算符、位运算符、各种单目运算符等等
 separators = {":", ",", "(", ")", "[", "]", "{", "}", ";"}
@@ -89,7 +89,7 @@ key_dic = {
     "else": TokenKind.ELSE,
     "while": TokenKind.WHILE,
     "for": TokenKind.FOR,
-    "do": TokenKind.DO,
+    "void": TokenKind.VOID,
     "break": TokenKind.BREAK,
     "continue": TokenKind.CONTINUE,
     "return": TokenKind.RETURN,
@@ -113,7 +113,7 @@ ope_dic = {
     '-': TokenKind.SUB,
     '*': TokenKind.MUL,
     '/': TokenKind.DIV,
-    '%': TokenKind.DIV,
+    '%': TokenKind.REMAINDER,
     '>': TokenKind.GREATER,
     '<': TokenKind.LESS,
     '=': TokenKind.ASSIGN,
