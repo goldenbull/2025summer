@@ -41,7 +41,7 @@ class TokenKind(Enum):
     BREAK = 16
     CONTINUE = 17
     RETURN = 18
-    UNSIGNED = 19
+    EXTERN = 19
     # 运算符
     ADD = 20
     SUB = 21
@@ -75,7 +75,7 @@ class TokenKind(Enum):
 
 
 keywords = {"int", "float", "long", "short", "char", "if", "else", "while", "for", "void", "break", "continue",
-            "return", "unsigned"}
+            "return", "extern"}
 operators = {"+", "-", "*", "/", "%", ">", "<", "==", ">=", "<=", "!=", "&&", "||", "="}  # 不包含逗号运算符、位运算符、各种单目运算符等等
 separators = {":", ",", "(", ")", "[", "]", "{", "}", ";"}
 
@@ -93,7 +93,7 @@ key_dic = {
     "break": TokenKind.BREAK,
     "continue": TokenKind.CONTINUE,
     "return": TokenKind.RETURN,
-    "unsigned": TokenKind.UNSIGNED,
+    "extern": TokenKind.EXTERN,
 }
 
 sep_dict = {

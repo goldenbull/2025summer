@@ -64,6 +64,7 @@ while True:
 
     elif op == "0":
         print("Thank you!")
+        break
 
     else:
         print("Invalid input!")

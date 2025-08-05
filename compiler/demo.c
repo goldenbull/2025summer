@@ -7,10 +7,12 @@
 
 #include <stdio.h>
 
-int f2();
+int f3();
+int f2(void);
 extern int global_x;
 int global_y;
 int global_z = 1.23;
+double f1 = 12.3;
 int f1(int x){if(x<10)return 100;else return 300;}
 
 void main()
@@ -22,15 +24,20 @@ void main()
     int arr[10];
     int arr2[20] = {1,2,3};
 
-    if if while (x>1)
-    {
-        /* code */
-    }
-    
+   if(a>b)
+   {
+    a=2;
+   }
+   else
+   {
+   }
 
-    while(0)
-    {
-        #define HERE 100
-        printf("%d",HERE);
-    }
+   for(int a=1;a>b;a=a+1)
+   {
+   }
+
+   for(a=1;a>b;a=a+1)
+   {
+   }
+
 }
