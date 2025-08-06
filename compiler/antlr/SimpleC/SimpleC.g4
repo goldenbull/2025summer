@@ -3,13 +3,11 @@ grammar SimpleC;
 prog : topElement* EOF ;
 
 topElement
-    : BlockComment
-    | LineComment
-    | MACRO
+    : MACRO
     | extern_var_declare
     | extern_var_define
-    | var_declare
-    | var_define
+    | var_declare_statement
+    | var_define_statement
     | function_declare
     | function_define
     ;
@@ -19,17 +17,25 @@ extern_var_declare
     ;
 
 extern_var_define
-    : EXTERN type IDENT ASSIGN constant SEMI
+    : EXTERN type IDENT ASSIGN expression SEMI
     ;
 
 var_declare
-    : type IDENT SEMI
-    | type IDENT LB CONST_INT RB SEMI
+    : type IDENT
+    | type IDENT LB CONST_INT RB
+    ;
+
+var_declare_statement
+    : var_declare SEMI
     ;
 
 var_define
-    : type IDENT ASSIGN constant SEMI
-    | type IDENT LB CONST_INT RB ASSIGN LCB arrayInitValueList? RCB SEMI
+    : var_declare ASSIGN expression
+    | var_declare ASSIGN LCB arrayInitValueList? RCB
+    ;
+
+var_define_statement
+    : var_define SEMI
     ;
 
 arrayInitValueList
@@ -62,22 +68,23 @@ param
 type
     : INT
     | FLOAT
+    | DOUBLE
     | CHAR
     | LONG
     | SHORT
     ;
 
 constant
-    : CONST_INT
-    | CONST_FLOAT
+    : '-'? CONST_INT
+    | '-'? CONST_FLOAT
     | CONST_CHAR
-    | CONST_LONG
+    | '-'? CONST_LONG
     ;
 
 statement
-    : var_declare
-    | var_define
-    | assignment
+    : var_declare_statement
+    | var_define_statement
+    | assignment_statement
     | if_statement
     | if_else_statement
     | while_statement
@@ -88,9 +95,13 @@ statement
     | return_statement
     ;
 
+assignment_statement
+    : assignment SEMI
+    ;
+
 assignment
-    : IDENT ASSIGN expression SEMI
-    | IDENT LB expression RB ASSIGN expression SEMI
+    : IDENT ASSIGN expression
+    | IDENT LB expression RB ASSIGN expression
     ;
 
 if_statement
@@ -145,12 +156,12 @@ expressionList
 
 expression
     : LP expression RP
-    | IDENT LB expression RB
     | function_call
-    | expression MUL|DIV|REMAINDER expression
-    | expression ADD|SUB expression
-    | expression GREATER|LESS|GREATEREQ|LESSEQ expression
-    | expression EQ|NEQ expression
+    | IDENT LB expression RB
+    | expression (MUL|DIV|REMAINDER) expression
+    | expression (ADD|SUB) expression
+    | expression (GREATER|LESS|GREATEREQ|LESSEQ) expression
+    | expression (EQ|NEQ) expression
     | expression AND expression
     | expression OR expression
     | constant
@@ -160,6 +171,7 @@ expression
 
 INT : 'int' ;
 FLOAT : 'float' ;
+DOUBLE : 'double' ;
 LONG : 'long' ;
 SHORT : 'short' ;
 CHAR : 'char' ;
@@ -204,4 +216,5 @@ CONST_LONG : [0-9]+ [lL] ;
 
 BlockComment : '/*' .*? '*/' -> skip ;
 LineComment : '//' ~[\r\n]* -> skip ;
-MACRO : '#' ~[\r\n]* -> skip ;
+MACRO : '#' ~[\r\n]* ;
+WS : [ \r\n\t]+ -> skip;

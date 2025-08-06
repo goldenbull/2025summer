@@ -1,0 +1,1 @@
+java -jar ..\antlr-4.13.2-complete.jar -Dlanguage=Python3 -o grammar -encoding UTF-8 -visitor SimpleC.g4
