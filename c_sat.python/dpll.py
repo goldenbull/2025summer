@@ -1,36 +1,20 @@
 import logging
 
-"""
-使用数据结构：clause:list[int], clauses:list[list[int], set(哈希表）
-使用方法：列表追加元素，查找元素，哈希查找, 求列表长度
 
-class Clause:
-    def __init__(self):
-        self.lits=[]
-        self.length=0
-
-class ClauseList:
-    def __init__(self):
-        self.clauses=[]
-        self.length=0
-"""
 # 赋值
 def assign(x: int, _clauses: list[list[int]]) -> list[list[int]]:
     new_clauses = []
-    new_clause=[]
     for c in _clauses:
         if x in c:
             continue  # 子句被满足
-        for l in c:
-            if l != -x:
-                new_clause.append(l)
+        new_clause = [l for l in c if l != -x]
         new_clauses.append(new_clause)
     return new_clauses
 
 
-# 找到出现次数最多的文字(需要用哈希查找）
+# 找到出现次数最多的文字
 def find_literal(clauses: list[list[int]]) -> int:
-    freq = {}
+    freq: dict[int, int] = dict()
     for c in clauses:
         for lit in c:
             freq[lit] = freq.get(lit, 0) + 1
@@ -38,15 +22,12 @@ def find_literal(clauses: list[list[int]]) -> int:
 
 
 # dpll函数
-def dpll_reduce(cur_literals: list[int], cur_clauses: list[list[int]]) -> list[int] or None:
+def dpll_reduce(cur_literals: list[int], cur_clauses: list[list[int]]) -> list[int] | None:
     # logging.info(f"dpll_reduce, cur_literals: cnt={len(cur_literals)}, {cur_literals}")
 
     # 通过单子句规则化简
     while any(len(c) == 1 for c in cur_clauses):
-        single_literal_clauses = []
-        for c in cur_clauses:
-            if len(c) == 1:
-                single_literal_clauses.append(c)
+        single_literal_clauses = [c for c in cur_clauses if len(c) == 1]
         single_literal = single_literal_clauses[0][0]
         cur_literals.append(single_literal)
         cur_clauses = assign(single_literal, cur_clauses)

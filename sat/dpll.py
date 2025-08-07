@@ -14,7 +14,7 @@ def assign(x: int, _clauses: list[list[int]]) -> list[list[int]]:
 
 # 找到出现次数最多的文字
 def find_literal(clauses: list[list[int]]) -> int:
-    freq = {}
+    freq: dict[int, int] = dict()
     for c in clauses:
         for lit in c:
             freq[lit] = freq.get(lit, 0) + 1
@@ -22,7 +22,7 @@ def find_literal(clauses: list[list[int]]) -> int:
 
 
 # dpll函数
-def dpll_reduce(cur_literals: list[int], cur_clauses: list[list[int]]) -> list[int] or None:
+def dpll_reduce(cur_literals: list[int], cur_clauses: list[list[int]]) -> list[int] | None:
     # logging.info(f"dpll_reduce, cur_literals: cnt={len(cur_literals)}, {cur_literals}")
 
     # 通过单子句规则化简

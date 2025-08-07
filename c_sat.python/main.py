@@ -1,8 +1,12 @@
+import logging
+
 import read_cnf
 import dpll
 import create_sudoku
 import sudoku_to_sat
 import time
+
+logging.basicConfig(level=logging.INFO)
 
 print("Welcome!")
 while True:
@@ -46,20 +50,22 @@ while True:
             result = sorted(result, key=abs)
             new_result = [x for x in result if x >= 0]
             print("The solution is: ", new_result)
+
+            # 输出数独的解
+            matrix = [[0] * 9 for _ in range(9)]
+            for num in new_result:
+                row = num // 100 - 1
+                col = (num // 10) % 10 - 1
+                value = num % 10
+
+                # 检查行列是否有效
+                if 0 <= row < 9 and 0 <= col < 9:
+                    matrix[row][col] = value
+
+            create_sudoku.print_borad(matrix)
         else:
             print("No solution found!")
 
-        # 输出数独的解
-        matrix = [[0 for _ in range(9)] for _ in range(9)]
-        for num in new_result:
-            row = num // 100 - 1
-            col = (num // 10) % 10 - 1
-            value = num % 10
-
-            # 检查行列是否有效
-            if 0 <= row < 9 and 0 <= col < 9:
-                matrix[row][col] = value
-        create_sudoku.print_borad(matrix)
         print(f"(time cost: {elapsed:.4f}s)")
 
     elif op == "0":

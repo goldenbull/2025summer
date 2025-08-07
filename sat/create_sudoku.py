@@ -99,19 +99,13 @@ def complete_sudoku() -> list[list[int]]:
 
 
 # 挖洞
-def dig_holes(sudoku, holes):
+def dig_holes(sudoku: list[list[int]], holes):
     cells = [(i, j) for i in range(9) for j in range(9)]
     random.shuffle(cells)
-    puzzle = copy.deepcopy(sudoku)  # 保存完整解
-    for i, j in cells[:holes]:
-        temp = puzzle[i][j]
-        sudoku[i][j] = 0
-        # 检查是否还有解
-        temp_copy = copy.deepcopy(puzzle)
-        if not solve_sudoku(temp_copy):
-            # 如果没有解，恢复这个数字
-            puzzle[i][j] = temp
-    return puzzle
+    for i in range(holes):
+        row = cells[i][0]
+        col = cells[i][1]
+        sudoku[row][col] = 0
 
 
 # 生成挖洞后的数独

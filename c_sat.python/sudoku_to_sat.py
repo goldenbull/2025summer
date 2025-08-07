@@ -1,18 +1,4 @@
-"""
-数据结构：一个structure:cell储存row，col,value,
-"""
-def get_box(r, c):
-    return [(i, j)
-            for i in range(r, r + 3)
-            for j in range(c, c + 3)
-            ]
-
-
-rows = [[(r, c) for c in range(1, 10)] for r in range(1, 10)]
-cols = [[(r, c) for r in range(1, 10)] for c in range(1, 10)]
-boxes = [get_box(r, c) for r in [1, 4, 7] for c in [1, 4, 7]]
-pcf_boxes = [get_box(2, 2), get_box(6, 6)]
-cross_line = [[(r, 10 - r) for r in range(1, 10)]]
+from create_sudoku import *
 
 
 def create_cnf(filename):
