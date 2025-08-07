@@ -1,12 +1,8 @@
-import logging
-
 import read_cnf
 import dpll
 import create_sudoku
 import sudoku_to_sat
 import time
-
-logging.basicConfig(level=logging.INFO)
 
 print("Welcome!")
 while True:

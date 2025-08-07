@@ -9,11 +9,15 @@
 
 int f3();
 int f2(void);
+void f4(int a, int b);
 extern int global_x;
 int global_y;
 int global_z = 1.23;
 double f1 = 12.3;
-int f1(int x){if(x<10)return 100;else return 300;}
+int f1(int x)
+{
+    if(x<10)return 100;else return 300;
+}
 
 void main()
 {
@@ -40,4 +44,9 @@ void main()
    {
    }
 
+   if(a>1)
+     if(b>1)
+       c=1;
+    else
+       print(123);
 }
