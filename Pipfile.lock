@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "a951526d1902efeb24ae8bd0fb1ed3d8f567b0d7a760a3c1eb746ccd6f64e255"
+            "sha256": "e803c782524136044b1085fa513697f82f604ab5b729b48739eb269c68dce3b8"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -16,6 +16,14 @@
         ]
     },
     "default": {
+        "antlr4-tools": {
+            "hashes": [
+                "sha256:79a0b971cf8337db49df076495332e9e401e2217d114ee1ac7797d3b28df001b",
+                "sha256:8af6fba512fc168e48eb93690ed21bdbe8848ed812d12b365d9d259a26ad6ba3"
+            ],
+            "index": "pypi",
+            "version": "==0.2.2"
+        },
         "cython": {
             "hashes": [
                 "sha256:06789eb7bd2e55b38b9dd349e9309f794aee0fed99c26ea5c9562d463877763f",
@@ -84,6 +92,14 @@
             "index": "pypi",
             "markers": "python_version >= '3.8'",
             "version": "==3.1.2"
+        },
+        "install-jdk": {
+            "hashes": [
+                "sha256:2bfd53caf660e4916df0215a5715519dcb9547fa2a5f07421fd97a8046851eaa",
+                "sha256:b63f0fcd63f7abab3443d4120ba92716397753b8a8ea3c85762a629925a9936e"
+            ],
+            "markers": "python_version >= '3.6' and python_version < '4.0'",
+            "version": "==1.1.0"
         },
         "mpmath": {
             "hashes": [
