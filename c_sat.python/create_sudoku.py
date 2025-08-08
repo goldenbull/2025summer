@@ -2,10 +2,12 @@ import copy
 import logging
 import random
 
+from sat.create_sudoku import cross_line
+
 
 # 目标生成一个百分号数独，打印出来并生成数独文件
 
-def get_box(r, c):
+def get_box(r:int, c:int):
     ret = []
     for i in range(r, r + 3):  # for(int i=r;i<r+3;i++)
         for j in range(c, c + 3):
@@ -14,12 +16,29 @@ def get_box(r, c):
     return ret
 
 
-rows = [[(r, c) for c in range(1, 10)] for r in range(1, 10)]
-cols = [[(r, c) for r in range(1, 10)] for c in range(1, 10)]
-boxes = [get_box(r, c) for r in [1, 4, 7] for c in [1, 4, 7]]
+rows = []
+for c in range(1, 10):
+    s_rows=[]
+    for r in range(1, 10):
+        s_rows.append((r,c))
+    rows.append(s_rows)
+cols = []
+for r in range(1, 10):
+    s_cols=[]
+    for c in range(1, 10):
+        s_cols.append((r, c))
+    cols.append(s_cols)
+boxes = []
+for r in [1, 4, 7]:
+    for c in [1, 4, 7]:
+        boxes.append(get_box(r, c))
 pcf_boxes = [get_box(2, 2), get_box(6, 6)]
 pcf_centers = [(3, 3), (7, 7)]
-cross_line = [[(r, 10 - r) for r in range(1, 10)]]
+cross_line = []
+s_cross_line = []
+for r in range(1, 10):
+    s_cross_line.append((r, 10 - r))
+    cross_line.append(s_cross_line)
 
 
 # 打印棋盘
@@ -32,9 +51,16 @@ def print_borad(sudoku: list[list[int]]):
             if j % 3 == 0 and j != 0:
                 print("| ", end="")
             if j == 8:
-                print(sudoku[i][j] if sudoku[i][j] else ".")
+                if sudoku[i][j] == 0:
+                    print(".")
+                else:
+                    print(sudoku[i][j])
             else:
-                print(str(sudoku[i][j] if sudoku[i][j] else ".") + ' ', end="")
+                if sudoku[i][j] == 0:
+                    print(".",end=" ")
+                else:
+                    print(sudoku[i][j],end=" ")
+
     print("=" * 21)
 
 
@@ -96,13 +122,15 @@ def solve_sudoku(sudoku: list[list[int]]) -> bool:
 def complete_sudoku() -> list[list[int]]:
     sudoku = [[0] * 9 for i in range(9)]
     solve_sudoku(sudoku)
-    print_borad(sudoku)
     return sudoku
 
 
 # 挖洞
 def dig_holes(sudoku: list[list[int]], holes):
-    cells = [(i, j) for i in range(9) for j in range(9)]
+    cells = []
+    for i in range(9):
+        for j in range(9):
+            cells.append((i,j))
     random.shuffle(cells)
     for i in range(holes):
         row = cells[i][0]

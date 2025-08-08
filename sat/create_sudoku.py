@@ -94,7 +94,6 @@ def solve_sudoku(sudoku: list[list[int]]) -> bool:
 def complete_sudoku() -> list[list[int]]:
     sudoku = [[0] * 9 for i in range(9)]
     solve_sudoku(sudoku)
-    print_borad(sudoku)
     return sudoku
 
 

@@ -9,18 +9,24 @@ def create_cnf(filename):
     line_n = lines[n]
     list_cnf = []
 
-    ranges = rows + cols + boxes + pcf_boxes + cross_line
-    for rng in ranges:
+    ranges = rows + cols + boxes + pcf_boxes + cross_line  # ranges: list[list[tuple[int, int]]]
+    for rng in ranges:  # rng: list[tuple[int, int]]
         # 每个格子可以是1到9
-        for x, y in rng:
-            list_cnf.append(tuple(x * 100 + y * 10 + v for v in range(1, 10)))
+        for x_y in rng:
+            x=x_y[0]
+            y=x_y[1]
+            temp=[]
+            for v in range(1,10):
+                temp.append(x * 100 + y * 10 + v)
+            list_cnf.append(temp)
+
 
         # 1到9只能出现1次
         for v in range(1, 10):
             for i in range(9):
                 for j in range(i + 1, 9):
                     (r1, c1), (r2, c2) = rng[i], rng[j]
-                    list_cnf.append((-r1 * 100 - c1 * 10 - v, -r2 * 100 - c2 * 10 - v))
+                    list_cnf.append([-r1 * 100 - c1 * 10 - v, -r2 * 100 - c2 * 10 - v])
 
     # 读入已有的数字
     curr_numbers = []
@@ -28,24 +34,31 @@ def create_cnf(filename):
         for j in range(9):
             c = line_n[9 * i + j]
             if c != '.':
-                curr_numbers.append((i, j, int(c)))
+                curr_numbers.append([i, j, int(c)])
 
     # 已填入的数字转为cnf
     for x, y, v in curr_numbers:
-        list_cnf.append((100 * (x + 1) + 10 * (y + 1) + v,))
+        list_cnf.append([100 * (x + 1) + 10 * (y + 1) + v])
 
     # 输出到cnf文件
-    literals = set()
+    literals = []
     for cnf in list_cnf:
         for v in cnf:
-            literals.add(abs(v))
+            abs_v = abs(v)
+            if abs_v not in literals:
+                literals.append(abs_v)
 
-    clauses = sorted(set(list_cnf))
+    temp_clauses = []
+    for clause in list_cnf:
+        sorted_clause = sorted(clause)
+        if sorted_clause not in temp_clauses:
+            temp_clauses.append(sorted_clause)
+    sorted(temp_clauses)
 
     fout = open("my_sudoku.cnf", "wt")
     fout.write("c sudoku output\n")
-    fout.write(f"p cnf {len(literals)} {len(clauses)}\n")
-    for clause in clauses:
+    fout.write(f"p cnf {len(literals)} {len(temp_clauses)}\n")
+    for clause in temp_clauses:
         for l in clause:
             print(l, end=' ', file=fout)
         print(0, file=fout)

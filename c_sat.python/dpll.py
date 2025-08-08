@@ -7,7 +7,10 @@ def assign(x: int, _clauses: list[list[int]]) -> list[list[int]]:
     for c in _clauses:
         if x in c:
             continue  # 子句被满足
-        new_clause = [l for l in c if l != -x]
+        new_clause = []
+        for l in c:
+            if l != -x:
+                new_clause.append(l)
         new_clauses.append(new_clause)
     return new_clauses
 
@@ -27,7 +30,10 @@ def dpll_reduce(cur_literals: list[int], cur_clauses: list[list[int]]) -> list[i
 
     # 通过单子句规则化简
     while any(len(c) == 1 for c in cur_clauses):
-        single_literal_clauses = [c for c in cur_clauses if len(c) == 1]
+        single_literal_clauses = []
+        for c in cur_clauses:
+            if len(c) == 1:
+                single_literal_clauses.append(c)
         single_literal = single_literal_clauses[0][0]
         cur_literals.append(single_literal)
         cur_clauses = assign(single_literal, cur_clauses)
