@@ -2,6 +2,6 @@
 
 typedef struct
 {
-	int row;
-	int col;
-}Coordinate;
+    int row;
+    int col;
+} Coordinate;

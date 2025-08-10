@@ -46,7 +46,7 @@ inline void dict_destory(Dict* dict)
             KV* kv = bucket->ptrArray[j];
             free(kv);
         }
-        list_destroy(bucket,free);
+        list_destroy(bucket, free);
     }
 
     free(dict->buckets);
