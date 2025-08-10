@@ -36,7 +36,7 @@ inline Dict* dict_create(int bucket_cnt)
     return dict;
 }
 
-inline void dict_destroy(Dict* dict)
+inline void dict_destory(Dict* dict)
 {
     for (int i = 0; i < dict->bucket_cnt; ++i)
     {
@@ -46,7 +46,7 @@ inline void dict_destroy(Dict* dict)
             KV* kv = bucket->ptrArray[j];
             free(kv);
         }
-        list_destroy(bucket,NULL);
+        list_destroy(bucket,free);
     }
 
     free(dict->buckets);

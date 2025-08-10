@@ -52,7 +52,7 @@ void test2()
 	{
 		printf("%d ", list->ptrArray[i]);
 	}
-	list_destroy(list, free);
+	list_destroy(list, NULL);
 }
 
 void test3()
@@ -77,15 +77,13 @@ void test3()
 	}
 	printf("\n");
 	PtrList* kvs = list_create(sizeof(KV) * 4);
-	kvs=dict_sorted(dict);
-	for (int i = 0; i < kvs->size; i++)
-	{
-		KV* kv = malloc(sizeof(KV));
-		kv = kvs->ptrArray[i];
+	kvs = dict_sorted(dict);
+	for (int i = 0; i < kvs->size; i++) {
+		KV* kv = kvs->ptrArray[i];
 		printf("%d,%d ", kv->key, kv->value);
 	}
+	dict_destory(dict);
 
-	dict_destroy(dict);
 	return 0;
 }
 
@@ -98,12 +96,12 @@ void test4()
 		{
 			dict_set(dict, i, i);
 		}
-		dict_destroy(dict);
+		dict_destory(dict);
 	}
 
 }
 int main(void)
 {
-	test1();
+	test2();
 	return 0;
 }

@@ -1,5 +1,6 @@
 #pragma once
 
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
@@ -14,11 +15,31 @@ typedef struct
     int size;
 } PtrList;
 
+
 // 创建新的 PtrList
 PtrList* list_create(int capacity)
 {
     PtrList* list = (PtrList*)malloc(sizeof(PtrList));
     if (!list) return NULL;
+//=======
+//inline PtrList* list_create(int capacity)
+//{
+//    return NULL;
+//}
+//
+//inline void list_destroy(PtrList* list)
+//{
+//}
+//
+//inline void list_append(PtrList* list, void* ptr)
+//{
+//}
+//
+//inline bool list_get(PtrList* list, int index, void** ptr)
+//{
+//    return 0;
+//}
+//>>>>>>> 2e9f68d224392b9cc98813ea8ffad4372edb2631
 
     list->ptrArray = (void**)malloc(sizeof(void*) * capacity);
     if (!list->ptrArray)
@@ -43,6 +64,7 @@ void list_destroy(PtrList* list, destroyer func)
             {
                 for (size_t i = 0; i < list->size; i++)
                 {
+                    printf("ptrArray[%zu] = %p\n", i, list->ptrArray[i]);
                     func(list->ptrArray[i]);
                 }
             }
@@ -91,6 +113,9 @@ bool list_get(PtrList* list, int index, void** ret)
 
 // 追加整型值
 void list_append_int(PtrList* list, int value)
+//=======
+//inline void list_append_int(PtrList* list, const int value)
+//>>>>>>> 2e9f68d224392b9cc98813ea8ffad4372edb2631
 {
     list_append(list, (void*)(int64_t)value);
 }
@@ -126,4 +151,12 @@ void list_sort(PtrList* list)
 {
     if (!list || list->size <= 1) return;
     qsort(list->ptrArray, list->size, sizeof(void*), ptr_compare);
+//=======
+//inline bool list_get_int(PtrList* list, const int index, int* value)
+//{
+//    int64_t v;
+//    bool ret = list_get(list, index, (void**)&v);
+//    if(ret) *value = (int)v;
+//    return ret;
+//>>>>>>> 2e9f68d224392b9cc98813ea8ffad4372edb2631
 }
