@@ -5,25 +5,11 @@
 #include "dict.h"
 #include "sudoku.h"
 
-//PtrList* get_box(int r, int c)
-//{
-//	PtrList* ret = list_create(9);
-//	for (int i = r; i < r + 3; i++)
-//	{
-//		for (int j = c; j < c + 3; j++)
-//		{
-//			Coordinate* temp = malloc(sizeof(Coordinate));
-//			temp->row = i;
-//			temp->row = j;
-//		}
-//	}
-//}
-
 void test1()
 {
 	while (1)
 	{
-		PtrList* list = list_create(1000000*sizeof(Coordinate));
+		PtrList* list = list_create(1000000);
 		for (int i = 0; i < 1000000; i++)
 		{
 			Coordinate* c = malloc(sizeof(Coordinate));
@@ -37,7 +23,7 @@ void test1()
 
 void test2()
 {
-	PtrList* list = list_create(10 * sizeof(Coordinate));
+	PtrList* list = list_create(10);
 	int a = 10, b = 4;
 	list_append_int(list, a);
 	list_append_int(list, b);
@@ -71,12 +57,13 @@ void test3()
 		PtrList* bucket = dict->buckets[i];
 		for (int j = 0; j < bucket->size; j++)
 		{
+
 			KV* kv = bucket->ptrArray[j];
 			printf("%d,%d ", kv->key, kv->value);
 		}
 	}
 	printf("\n");
-	PtrList* kvs = list_create(sizeof(KV) * 4);
+	PtrList* kvs = list_create(4);
 	kvs = dict_sorted(dict);
 	for (int i = 0; i < kvs->size; i++) {
 		KV* kv = kvs->ptrArray[i];

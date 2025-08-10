@@ -14,6 +14,9 @@
     <ClCompile Include="c_sat.c">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="dpll.c">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="list.h">

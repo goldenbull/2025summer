@@ -15,32 +15,25 @@ typedef struct
     int size;
 } PtrList;
 
+//嵌套PtrList销毁（用于子句列表）
+void destroy_clause(void* element) {
+    PtrList* clause = (PtrList*)element;
+    list_destroy(clause, NULL);
+}
+
+//带嵌套销毁的KV对
+void destroy_kv_pair(void* element) {
+    KV* kv = (KV*)element;
+    // 如果KV.value需要特殊处理：
+    // if (kv->value_needs_free) free(kv->value);
+    free(kv);
+}
 
 // 创建新的 PtrList
 PtrList* list_create(int capacity)
 {
     PtrList* list = (PtrList*)malloc(sizeof(PtrList));
     if (!list) return NULL;
-//=======
-//inline PtrList* list_create(int capacity)
-//{
-//    return NULL;
-//}
-//
-//inline void list_destroy(PtrList* list)
-//{
-//}
-//
-//inline void list_append(PtrList* list, void* ptr)
-//{
-//}
-//
-//inline bool list_get(PtrList* list, int index, void** ptr)
-//{
-//    return 0;
-//}
-//>>>>>>> 2e9f68d224392b9cc98813ea8ffad4372edb2631
-
     list->ptrArray = (void**)malloc(sizeof(void*) * capacity);
     if (!list->ptrArray)
     {

@@ -124,6 +124,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="c_sat.c" />
+    <ClCompile Include="dpll.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dict.h" />
