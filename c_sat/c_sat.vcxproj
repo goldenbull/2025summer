@@ -124,7 +124,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="c_sat.c" />
+    <ClCompile Include="dict.c" />
     <ClCompile Include="dpll.c" />
+    <ClCompile Include="list.c" />
+    <ClCompile Include="sudoku.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dict.h" />

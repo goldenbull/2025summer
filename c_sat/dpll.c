@@ -3,6 +3,12 @@
 #include "dict.h"
 #include "list.h"
 
+//嵌套PtrList销毁（用于子句列表）
+void destroy_clause(void* element) {
+	PtrList* clause = (PtrList*)element;
+	list_destroy(clause, NULL);
+}
+
 //处理赋值的文字
 PtrList* assign(int x, PtrList* _clauses)
 {
@@ -31,7 +37,7 @@ PtrList* assign(int x, PtrList* _clauses)
 			int l;
 			list_get_int(clause, j, &l);
 			if (l != -x)
-				list_append(new_clauses, l);
+				list_append_int(new_clauses, l);
 		}
 		list_append(new_clauses, new_clause);
 	}
@@ -72,6 +78,8 @@ int find_literal(PtrList* clauses)
 	}
 	list_destroy(kvs, NULL);
 	dict_destory(freq);
+
+	return max_lit;
 }
 
 //dpll函数

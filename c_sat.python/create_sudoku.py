@@ -2,9 +2,6 @@ import copy
 import logging
 import random
 
-from sat.create_sudoku import cross_line
-
-
 # 目标生成一个百分号数独，打印出来并生成数独文件
 
 def get_box(r:int, c:int):

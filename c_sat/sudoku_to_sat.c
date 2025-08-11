@@ -10,6 +10,7 @@ PtrList* boxes = NULL;
 PtrList* pcf_boxes = NULL;
 PtrList* cross_line = NULL;
 
+//初始化数独结构
 void init_sudoku_structures(PtrList** rows, PtrList** cols, PtrList** boxes,
     PtrList** pcf_boxes, PtrList** pcf_centers, PtrList** cross_line)
 {
@@ -75,4 +76,45 @@ void init_sudoku_structures(PtrList** rows, PtrList** cols, PtrList** boxes,
         list_append(s_cross_line, c);
     }
     list_append(*cross_line, s_cross_line);
+}
+
+init_sudoku_structures(rows, cols, boxes, pcf_centers, cross_line);
+
+void create_cnf(char* filename)
+{
+    //逐行读取数独文件
+    PtrList* lines = read_lines(filename);
+    PtrList* line;
+    list_get(lines, 0, (void**)&line);
+    PtrList* list_cnf = list_create(1);
+
+    //生成完整的数独结构
+    int total_size = rows->size + cols->size + boxes->size + pcf_boxes->size + cross_line->size;
+    PtrList* ranges = list_create(total_size);
+    for (int i = 0; i < rows->size; i++)
+        list_append(ranges, rows->ptrArray[i]);
+    for (int i = 0; i < cols->size; i++)
+        list_append(ranges, cols->ptrArray[i]);
+    for (int i = 0; i < boxes->size; i++)
+        list_append(ranges, boxes->ptrArray[i]);
+    for (int i = 0; i < pcf_boxes->size; i++)
+        list_append(ranges, pcf_boxes->ptrArray[i]);
+    for (int i = 0; i < cross_line->size; i++)
+        list_append(ranges, cross_line->ptrArray[i]);
+
+    //约束规则
+    for (int i = 0; i < ranges->size; i++)
+    {
+        PtrList* rng;
+        list_get(ranges, i, (void**)&rng);
+
+        //每个格子可以是1到9
+        for (int j = 0, j < rng->size; j++)
+        {
+            Coordinate* c = malloc(sizeof(Coordinate));
+            c = list_get(rng, j, (void**)&c);
+            int x = c->row;
+            int y = c->col;
+        }
+    }
 }

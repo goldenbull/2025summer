@@ -1,10 +1,6 @@
 #pragma once
 
-
-#include <stdlib.h>
-#include <string.h>
-#include <stdint.h>
-#include <stdbool.h>
+#include<stdbool.h>
 
 typedef void (*destroyer)(void*);
 
@@ -15,141 +11,18 @@ typedef struct
     int size;
 } PtrList;
 
-//嵌套PtrList销毁（用于子句列表）
-void destroy_clause(void* element) {
-    PtrList* clause = (PtrList*)element;
-    list_destroy(clause, NULL);
-}
+PtrList* list_create(int capacity);
 
-//带嵌套销毁的KV对
-void destroy_kv_pair(void* element) {
-    KV* kv = (KV*)element;
-    // 如果KV.value需要特殊处理：
-    // if (kv->value_needs_free) free(kv->value);
-    free(kv);
-}
+void list_destroy(PtrList* list, destroyer func);
 
-// 创建新的 PtrList
-PtrList* list_create(int capacity)
-{
-    PtrList* list = (PtrList*)malloc(sizeof(PtrList));
-    if (!list) return NULL;
-    list->ptrArray = (void**)malloc(sizeof(void*) * capacity);
-    if (!list->ptrArray)
-    {
-        free(list);
-        return NULL;
-    }
+void list_append(PtrList* list, void* ptr);
 
-    list->capacity = capacity;
-    list->size = 0;
-    return list;
-}
+bool list_get(PtrList* list, int index, void** ret);
 
-// 销毁 PtrList
-void list_destroy(PtrList* list, destroyer func)
-{
-    if (list)
-    {
-        if (list->ptrArray)
-        {
-            if (func != NULL)
-            {
-                for (size_t i = 0; i < list->size; i++)
-                {
-                    printf("ptrArray[%zu] = %p\n", i, list->ptrArray[i]);
-                    func(list->ptrArray[i]);
-                }
-            }
+int list_get_int(PtrList* list, int index, int* ret);
 
-            free(list->ptrArray);
-        }
-        free(list);
-    }
-}
+void list_append_int(PtrList* list, int value);
 
-// 追加元素
-void list_append(PtrList* list, void* ptr)
-{
-    if (!list) return;
+static int ptr_compare(const void* a, const void* b);
 
-    // 需要扩容
-    if (list->size >= list->capacity)
-    {
-        int new_capacity = list->capacity * 2;
-        void** new_array = (void**)realloc(list->ptrArray, sizeof(void*) * new_capacity);
-        if (!new_array) return; // 扩容失败
-
-        list->ptrArray = new_array;
-        list->capacity = new_capacity;
-    }
-
-    list->ptrArray[list->size] = ptr;
-    list->size++;
-}
-
-// 获取元素
-bool list_get(PtrList* list, int index, void** ret)
-{
-    if (!list || index < 0 || index >= list->size)
-    {
-        return false; // 失败
-    }
-
-    if (ret)
-    {
-        *ret = list->ptrArray[index];
-    }
-
-    return true; // 成功
-}
-
-// 追加整型值
-void list_append_int(PtrList* list, int value)
-//=======
-//inline void list_append_int(PtrList* list, const int value)
-//>>>>>>> 2e9f68d224392b9cc98813ea8ffad4372edb2631
-{
-    list_append(list, (void*)(int64_t)value);
-}
-
-// 获取整型值
-int list_get_int(PtrList* list, int index, int* ret)
-{
-    void* ptr;
-    if (!list_get(list, index, &ptr))
-    {
-        return false; // 失败
-    }
-
-    if (ret)
-    {
-        *ret = (int)(int64_t)ptr;
-    }
-
-    return true; // 成功
-}
-
-// void qsort(void* base, size_t nitems, size_t size, int (*compar)(const void*, const void*));
-
-
-// 比较函数用于排序
-static int ptr_compare(const void* a, const void* b)
-{
-    return (*(void**)a > *(void**)b) ? 1 : -1;
-}
-
-// 排序
-void list_sort(PtrList* list)
-{
-    if (!list || list->size <= 1) return;
-    qsort(list->ptrArray, list->size, sizeof(void*), ptr_compare);
-//=======
-//inline bool list_get_int(PtrList* list, const int index, int* value)
-//{
-//    int64_t v;
-//    bool ret = list_get(list, index, (void**)&v);
-//    if(ret) *value = (int)v;
-//    return ret;
-//>>>>>>> 2e9f68d224392b9cc98813ea8ffad4372edb2631
-}
+void list_sort(PtrList* list);

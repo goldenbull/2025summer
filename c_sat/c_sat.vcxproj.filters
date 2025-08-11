@@ -17,6 +17,15 @@
     <ClCompile Include="dpll.c">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="dict.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="list.c">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="sudoku.c">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="list.h">

@@ -1,5 +1,6 @@
 ﻿#include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #include "list.h"
 #include "dict.h"
@@ -13,9 +14,12 @@ void test1()
 		for (int i = 0; i < 1000000; i++)
 		{
 			Coordinate* c = malloc(sizeof(Coordinate));
-			c->row = 1;
-			c->col = 2;
-			list_append(list, c);
+			if (c)
+			{
+				c->row = 1;
+				c->col = 2;
+				list_append(list, c);
+			}
 		}
 		list_destroy(list, free);
 	}
@@ -30,13 +34,13 @@ void test2()
 	list_append_int(list, 8);
 	for (int i=0; i < list->size; i++)
 	{
-		printf("%d ", list->ptrArray[i]);
+		printf("%lld ", (int64_t)list->ptrArray[i]);
 	}
 	printf("\n");
 	list_sort(list);
 	for (int i=0; i < list->size; i++)
 	{
-		printf("%d ", list->ptrArray[i]);
+		printf("%lld ", (int64_t)list->ptrArray[i]);
 	}
 	list_destroy(list, NULL);
 }
@@ -70,25 +74,23 @@ void test3()
 		printf("%d,%d ", kv->key, kv->value);
 	}
 	dict_destory(dict);
-
-	return 0;
 }
 
 void test4()
 {
 	while (1)
 	{
-		Dict* dict = dict_create(1000000);
+		Dict* dict = dict_create(1000);
 		for (int i = 0; i < 1000000; i++)
 		{
-			dict_set(dict, i, i);
+			dict_set(dict, i, i*i);
 		}
 		dict_destory(dict);
 	}
-
 }
+
 int main(void)
 {
-	test2();
+	test4();
 	return 0;
 }
