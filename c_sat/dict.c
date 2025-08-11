@@ -126,15 +126,8 @@ bool dict_get(const Dict* dict, const int key, int* value)
     }
 }
 
-static int dic_compare(const void* a, const void* b)
-{
-    const KV* kv1 = *(const KV**)a;
-    const KV* kv2 = *(const KV**)b;
-    return kv2->key - kv1->key;
-}
-
-//从大到小排序
-PtrList* dict_sorted(const Dict* dict)
+// 排序
+PtrList* dict_sorted(const Dict* dict, kv_comparer comp)
 {
     //取出所有键值对
     PtrList* kvs = list_create(dict->bucket_cnt * 32);
@@ -147,6 +140,6 @@ PtrList* dict_sorted(const Dict* dict)
             list_append(kvs, kv);
         }
     }
-    qsort(kvs->ptrArray, kvs->size, sizeof(KV*), dic_compare);
+    qsort(kvs->ptrArray, kvs->size, sizeof(KV*), comp);
     return kvs;
 }

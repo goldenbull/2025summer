@@ -128,11 +128,13 @@
     <ClCompile Include="dpll.c" />
     <ClCompile Include="list.c" />
     <ClCompile Include="sudoku.c" />
+    <ClCompile Include="sudoku_to_sat.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dict.h" />
     <ClInclude Include="list.h" />
     <ClInclude Include="sudoku.h" />
+    <ClInclude Include="sudoku_to_sat.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

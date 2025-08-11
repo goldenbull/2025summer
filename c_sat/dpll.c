@@ -9,6 +9,23 @@ void destroy_clause(void* element) {
 	list_destroy(clause, NULL);
 }
 
+int comp_by_v(const KV* a, const KV* b)
+{
+	return a->value - b->value;
+}
+
+PtrList* clone_clause(PtrList* clause)
+{
+	PtrList* new_clause = list_create(clause->size + 1);
+	for (int i = 0; i < clause->size; i++)
+	{
+		int lit;
+		list_get_int(clause, i, &lit);
+		list_append_int(new_clause, lit);
+	}
+	return new_clause;
+}
+
 //处理赋值的文字
 PtrList* assign(int x, PtrList* _clauses)
 {
@@ -16,19 +33,9 @@ PtrList* assign(int x, PtrList* _clauses)
 	for (int i = 0; i < _clauses->size; i++)
 	{
 		PtrList* clause;
-		list_get(_clauses, i, (void**)&clause);
-		bool x_in_clause = false;
-		for (int j = 0; j < clause->size; j++)
-		{
-			int val;
-			list_get_int(clause, j, &val);
-			if (val == x)
-			{
-				x_in_clause = true;
-				break;
-			}
-		}
-		if (x_in_clause)
+		list_get(_clauses, i, &clause);
+
+		if (list_element_in_list(clause, &x, compare_int))
 			continue;
 
 		PtrList* new_clause = list_create(clause->capacity);
@@ -51,7 +58,7 @@ int find_literal(PtrList* clauses)
 	for (int i = 0; i < clauses->size; i++)
 	{
 		PtrList* c;
-		list_get(clauses, i, (void**)&c);
+		list_get(clauses, i, &c);
 		for (int j = 0; j < c->size; j++)
 		{
 			int lit;
@@ -63,20 +70,12 @@ int find_literal(PtrList* clauses)
 		}
 	}
 
-	PtrList* kvs = dict_sorted(freq);
-	int max_lit = 0;
-	int max_cnt = -1;
-	for (int i = 0; i < kvs->size; i++)
-	{
-		KV* item;
-		list_get(kvs, i, (void**)&item);
-		if (item->value>max_cnt)
-		{
-			max_cnt = item->value;
-			max_lit = item->key;
-		}
-	}
-	list_destroy(kvs, NULL);
+	PtrList* sorted_kv = dict_sorted(freq, comp_by_v);
+	KV* first_kv = NULL;
+	list_get(sorted_kv, 0, &first_kv);
+	int max_lit = first_kv->key;
+
+	list_destroy(sorted_kv, NULL);
 	dict_destory(freq);
 
 	return max_lit;
@@ -92,7 +91,7 @@ PtrList* dpll_reduce(PtrList* cur_literals, PtrList* cur_clauses)
 		for (int i = 0; i < cur_clauses->size; i++)
 		{
 			PtrList* c;
-			list_get(cur_clauses, i, (void**)&c);
+			list_get(cur_clauses, i, &c);
 			if (c->size == 1)
 			{
 				found = true;
@@ -106,13 +105,13 @@ PtrList* dpll_reduce(PtrList* cur_literals, PtrList* cur_clauses)
 		for (int i = 0; i < cur_clauses->size; i++)
 		{
 			PtrList* c;
-			list_get(cur_clauses, i, (void**)&c);
+			list_get(cur_clauses, i, &c);
 			if (c->size == 1)
 				list_append(single_litral_clauses, c);
 		}
 
 		PtrList* first_clause;
-		list_get(single_litral_clauses, 0, (void**)& first_clause);
+		list_get(single_litral_clauses, 0, & first_clause);
 		int single_literal;
 		list_get_int(first_clause, 0, &single_literal);
 		list_destroy(single_litral_clauses, NULL);
@@ -129,7 +128,7 @@ PtrList* dpll_reduce(PtrList* cur_literals, PtrList* cur_clauses)
 		for (int i = 0; i < cur_clauses->size; i++)
 		{
 			PtrList* c;
-			list_get(cur_clauses, i, (void**)&c);
+			list_get(cur_clauses, i, &c);
 			if (c->size == 0)
 			{
 				found_empty_clause = true;
@@ -140,13 +139,14 @@ PtrList* dpll_reduce(PtrList* cur_literals, PtrList* cur_clauses)
 			return NULL;
 	}
 
+	//判断是否结束
 	if (cur_clauses->size==0)
 		return cur_literals;
 	bool found_empty_clause = false;
 	for (int i = 0; i < cur_clauses->size; i++)
 	{
 		PtrList* c;
-		list_get(cur_clauses, i, (void**)&c);
+		list_get(cur_clauses, i, &c);
 		if (c->size == 0)
 		{
 			found_empty_clause = true;
@@ -161,13 +161,7 @@ PtrList* dpll_reduce(PtrList* cur_literals, PtrList* cur_clauses)
 
 	//尝试赋值为true
 	PtrList* reduced_clauses_true = assign(next_lit, cur_clauses);
-	PtrList* new_literals_true = list_create(cur_literals->size + 1);
-	for (int i = 0; i < cur_literals->size; i++)
-	{
-		int lit;
-		list_get_int(cur_literals, i, &lit);
-		list_append_int(new_literals_true, lit);
-	}
+	PtrList* new_literals_true = clone_clause(cur_literals);
 	list_append_int(new_literals_true, next_lit);
 	PtrList* result = dpll_reduce(new_literals_true, reduced_clauses_true);
 	if (result != NULL)
@@ -181,13 +175,7 @@ PtrList* dpll_reduce(PtrList* cur_literals, PtrList* cur_clauses)
 
 	//尝试赋值为false
 	PtrList* reduced_clauses_false = assign(-next_lit, cur_clauses);
-	PtrList* new_literals_false = list_create(cur_literals->size + 1);
-	for (int i = 0; i < cur_literals->size; i++) 
-	{
-		int lit;
-		list_get_int(cur_literals, i, &lit);
-		list_append_int(new_literals_false, lit);
-	}
+	PtrList* new_literals_false = clone_clause(cur_literals);
 	list_append_int(new_literals_false, -next_lit);
 	result = dpll_reduce(new_literals_false, reduced_clauses_false);
 	list_destroy(new_literals_false, NULL);

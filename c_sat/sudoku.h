@@ -11,3 +11,5 @@ typedef struct
 PtrList* get_box(int r, int c);
 
 PtrList* read_lines(const char* filename);
+
+void append_coordiante(PtrList* coordinates, int row, int col);

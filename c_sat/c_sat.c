@@ -5,6 +5,8 @@
 #include "list.h"
 #include "dict.h"
 #include "sudoku.h"
+#include "sudoku_to_sat.h"
+
 
 void test1()
 {
@@ -37,7 +39,7 @@ void test2()
 		printf("%lld ", (int64_t)list->ptrArray[i]);
 	}
 	printf("\n");
-	list_sort(list);
+	list_sort(list, compare_int);
 	for (int i=0; i < list->size; i++)
 	{
 		printf("%lld ", (int64_t)list->ptrArray[i]);
@@ -68,11 +70,11 @@ void test3()
 	}
 	printf("\n");
 	PtrList* kvs = list_create(4);
-	kvs = dict_sorted(dict);
-	for (int i = 0; i < kvs->size; i++) {
-		KV* kv = kvs->ptrArray[i];
-		printf("%d,%d ", kv->key, kv->value);
-	}
+	//kvs = dict_sorted(dict);
+	//for (int i = 0; i < kvs->size; i++) {
+	//	KV* kv = kvs->ptrArray[i];
+	//	printf("%d,%d ", kv->key, kv->value);
+	//}
 	dict_destory(dict);
 }
 
@@ -91,6 +93,8 @@ void test4()
 
 int main(void)
 {
+	init_sudoku_structures();
+
 	test4();
 	return 0;
 }

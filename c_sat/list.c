@@ -10,7 +10,7 @@ PtrList* list_create(int capacity)
 {
     PtrList* list = (PtrList*)malloc(sizeof(PtrList));
     if (!list) return NULL;
-    list->ptrArray = (void**)malloc(sizeof(void*) * capacity);
+    list->ptrArray = malloc(sizeof(void*) * capacity);
     if (!list->ptrArray)
     {
         free(list);
@@ -53,7 +53,7 @@ void list_append(PtrList* list, void* ptr)
     if (list->size >= list->capacity)
     {
         int new_capacity = list->capacity * 2;
-        void** new_array = (void**)realloc(list->ptrArray, sizeof(void*) * new_capacity);
+        void** new_array = realloc(list->ptrArray, sizeof(void*) * new_capacity);
         if (!new_array) return; // 扩容失败
 
         list->ptrArray = new_array;
@@ -103,15 +103,27 @@ int list_get_int(PtrList* list, int index, int* ret)
     return true; // 成功
 }
 
-// 比较函数用于排序
-static int ptr_compare(const void* a, const void* b)
-{
-    return (*(void**)a > *(void**)b) ? 1 : -1;
-}
 
 // 排序
-void list_sort(PtrList* list)
+void list_sort(PtrList* list, comparer comp)
 {
     if (!list || list->size <= 1) return;
-    qsort(list->ptrArray, list->size, sizeof(void*), ptr_compare);
+    qsort(list->ptrArray, list->size, sizeof(void*), comp);
+}
+
+bool list_element_in_list(PtrList* list, const void* element, comparer comp)
+{
+    if (!list || !element) return false;
+
+    for (int j = 0; j < list->size; j++)
+    {
+        void* val;
+        list_get(list, j, &val);
+        if (comp(element, val) == 0)
+        {
+            return true;
+        }
+    }
+
+    return false;
 }

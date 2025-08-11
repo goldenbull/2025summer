@@ -35,7 +35,7 @@ cross_line = []
 s_cross_line = []
 for r in range(1, 10):
     s_cross_line.append((r, 10 - r))
-    cross_line.append(s_cross_line)
+cross_line.append(s_cross_line)
 
 
 # 打印棋盘

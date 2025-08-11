@@ -26,6 +26,9 @@
     <ClCompile Include="sudoku.c">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="sudoku_to_sat.c">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="list.h">
@@ -35,6 +38,9 @@
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="sudoku.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="sudoku_to_sat.h">
       <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>

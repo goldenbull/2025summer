@@ -29,6 +29,5 @@ bool dict_set(const Dict* dict, const int key, const int value);
 
 bool dict_get(const Dict* dict, const int key, int* value);
 
-static int dic_compare(const void* a, const void* b);
-
-PtrList* dict_sorted(const Dict* dict);
+typedef int (*kv_comparer)(const KV* a, const KV* b);
+PtrList* dict_sorted(const Dict* dict, kv_comparer comp);

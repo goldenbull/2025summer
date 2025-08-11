@@ -29,15 +29,15 @@ def create_cnf(filename):
                     list_cnf.append([-r1 * 100 - c1 * 10 - v, -r2 * 100 - c2 * 10 - v])
 
     # 读入已有的数字
-    curr_numbers = []
+    cur_numbers = []
     for i in range(9):
         for j in range(9):
             c = line_n[9 * i + j]
             if c != '.':
-                curr_numbers.append([i, j, int(c)])
+                cur_numbers.append([i, j, int(c)])
 
     # 已填入的数字转为cnf
-    for x, y, v in curr_numbers:
+    for x, y, v in cur_numbers:
         list_cnf.append([100 * (x + 1) + 10 * (y + 1) + v])
 
     # 输出到cnf文件

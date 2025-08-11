@@ -47,7 +47,7 @@ def dpll_reduce(cur_literals: list[int], cur_clauses: list[list[int]]) -> list[i
     if not cur_clauses:
         return cur_literals
     if [] in cur_clauses:
-        return False
+        return None
 
     # 寻找子句最多的文字
     next_ltl = find_literal(cur_clauses)

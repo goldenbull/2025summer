@@ -1,92 +1,74 @@
-#include<stdio.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <math.h>
 #include "dict.h"
 #include "list.h"
 #include "sudoku.h"
 
 PtrList* rows = NULL;
-PtrList* clos = NULL;
+PtrList* cols = NULL;
 PtrList* boxes = NULL;
+PtrList* pcf_centers = NULL;
 PtrList* pcf_boxes = NULL;
 PtrList* cross_line = NULL;
 
 //初始化数独结构
-void init_sudoku_structures(PtrList** rows, PtrList** cols, PtrList** boxes,
-    PtrList** pcf_boxes, PtrList** pcf_centers, PtrList** cross_line)
+void init_sudoku_structures()
 {
-    *rows = list_create(9);
+    rows = list_create(9);
     for (int i = 1; i < 10; i++)
     {
         PtrList* s_rows = list_create(9);
         for (int j = 1; j < 10; j++)
-        {
-            Coordinate* c = malloc(sizeof(Coordinate));
-            c->row = j;
-            c->col = i;
-            list_append(s_rows, c);
-        }
-        list_append(*rows, s_rows);
+            append_coordiante(s_rows, j, i);
+        list_append(rows, s_rows);
     }
 
-    *cols = list_create(9);
+    cols = list_create(9);
     for (int i = 1; i < 10; i++)
     {
         PtrList* s_cols = list_create(9);
         for (int j = 1; j < 10; j++)
-        {
-            Coordinate* c = malloc(sizeof(Coordinate));
-            c->row = i;
-            c->col = j;
-            list_append(s_cols, c);
-        }
-        list_append(*cols, s_cols);
+            append_coordiante(s_cols, i, j);
+        list_append(cols, s_cols);
     }
 
-    *boxes = list_create(9);
+    boxes = list_create(9);
     int box_rows[] = { 1, 4, 7 };
     int box_cols[] = { 1, 4, 7 };
-    for (int i = 0; i < 3; i++) 
+    for (int i = 0; i < 3; i++)
     {
-        for (int j = 0; j < 3; j++) 
+        for (int j = 0; j < 3; j++)
         {
             PtrList* box = get_box(box_rows[i], box_cols[j]);
-            list_append(*boxes, box);
+            list_append(boxes, box);
         }
     }
 
-    *pcf_boxes = list_create(2);
-    list_append(*pcf_boxes, get_box(2, 2));
-    list_append(*pcf_boxes, get_box(6, 6));
+    pcf_boxes = list_create(2);
+    list_append(pcf_boxes, get_box(2, 2));
+    list_append(pcf_boxes, get_box(6, 6));
 
-    *pcf_centers = list_create(2);
-    Coordinate* center1 = malloc(sizeof(Coordinate));
-    center1->row = 3; center1->col = 3;
-    Coordinate* center2 = malloc(sizeof(Coordinate));
-    center2->row = 7; center2->col = 7;
-    list_append(*pcf_centers, center1);
-    list_append(*pcf_centers, center2);
+    pcf_centers = list_create(2);
+    append_coordiante(pcf_centers, 3, 3);
+    append_coordiante(pcf_centers, 7, 7);
 
-    *cross_line = list_create(1);
+    cross_line = list_create(1);
     PtrList* s_cross_line = list_create(9);
-    for (int r = 1; r <= 9; r++) 
-    {
-        Coordinate* c = malloc(sizeof(Coordinate));
-        c->row = r;
-        c->col = 10 - r;
-        list_append(s_cross_line, c);
-    }
-    list_append(*cross_line, s_cross_line);
+    for (int r = 1; r <= 9; r++)
+        append_coordiante(s_cross_line, r, 10 - r);
+    list_append(cross_line, s_cross_line);
 }
 
-init_sudoku_structures(rows, cols, boxes, pcf_centers, cross_line);
 
 void create_cnf(char* filename)
 {
     //逐行读取数独文件
     PtrList* lines = read_lines(filename);
-    PtrList* line;
-    list_get(lines, 0, (void**)&line);
-    PtrList* list_cnf = list_create(1);
+    char* line;
+    list_get(lines, 0, &line);
+    PtrList* list_cnf = list_create(1000);
 
     //生成完整的数独结构
     int total_size = rows->size + cols->size + boxes->size + pcf_boxes->size + cross_line->size;
@@ -103,18 +85,101 @@ void create_cnf(char* filename)
         list_append(ranges, cross_line->ptrArray[i]);
 
     //约束规则
-    for (int i = 0; i < ranges->size; i++)
+    for (int k = 0; k < ranges->size; k++)
     {
         PtrList* rng;
-        list_get(ranges, i, (void**)&rng);
+        list_get(ranges, k, &rng);
 
         //每个格子可以是1到9
-        for (int j = 0, j < rng->size; j++)
+        for (int j = 0; j < rng->size; j++)
         {
-            Coordinate* c = malloc(sizeof(Coordinate));
-            c = list_get(rng, j, (void**)&c);
+            Coordinate* c;
+            list_get(rng, j, &c);
             int x = c->row;
             int y = c->col;
+            PtrList* temp;
+            temp = list_create(10);
+            for (int v= 1; v < 10; v++)
+                list_append_int(temp, x * 100 + y * 10 + v);
+            list_append(list_cnf, temp);
+        }
+
+        //1到9只能出现一次
+        for (int v = 1; v < 10; v++)
+        {
+            for (int i = 0; i < 9; i++)
+            {
+                for (int j = i + 1; j < 9; j++)
+                {
+                    Coordinate *c1, *c2;
+                    list_get(rng, i, &c1);
+                    list_get(rng, j, &c2);
+                    int x1 = c1->row;
+                    int y1 = c1->col;
+                    int x2 = c2->row;
+                    int y2 = c2->col;
+                    PtrList* temp2 = list_create(2);
+                    list_append_int(temp2, -x1 * 100 - y1 * 10 - v);
+                    list_append_int(temp2, -x2 * 100 - y2 * 10 - v);
+                    list_append(list_cnf, temp2);
+                }
+            }
+        }
+    }
+
+    //读入已有的数字
+    PtrList* cur_numbers = list_create(81);
+    for (int i = 0; i < 9; i++)
+    {
+        for (int j = 0; j < 9; j++)
+        {
+            char c = line[9 * i + j];
+            if (c != '.')
+            {
+                PtrList* temp3 = list_create(3);
+                list_append_int(temp3, i);
+                list_append_int(temp3, j);
+                list_append_int(temp3, c);
+                list_append(cur_numbers, temp3);
+            }
+        }
+    }
+
+    //将已填入的数字转为cnf
+    for (int i = 0; i < cur_numbers->size; i++)
+    {
+        PtrList* temp4 = list_create(3);
+        list_get(cur_numbers, i, &temp4);
+        int x, y, v;
+        list_get(temp4, 0, &x);
+        list_get(temp4, 1, &y);
+        list_get(temp4, 2, &v);
+        PtrList* temp5 = list_create(1);
+        list_append_int(temp5, 100 * (x + 1) + 10 * (y + 1) + v);
+        list_append(list_cnf, temp5);
+    }
+
+    //收集所有文字并去重
+    PtrList* literals = list_create(100);
+    for (int i = 0; i < list_cnf->size; i++)
+    {
+        PtrList* cnf = list_cnf->ptrArray[i];
+        for (int j = 0; j < cnf->size; j++)
+        {
+            int v = (int)(int64_t)cnf->ptrArray[j];
+            int abs_v = abs(v);
+
+            bool exist = false;
+            for (int k = 0; k < literals->size; k++)
+            {
+                if ((int)(int64_t)literals->ptrArray[k] == abs_v)
+                {
+                    exist = true;
+                    break;
+                }
+            }
+            if (!exist)
+                list_append_int(literals, abs_v);
         }
     }
 }
