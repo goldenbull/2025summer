@@ -15,21 +15,22 @@ PtrList* str_split(const char* s)
 
 	//分割字符串
 	char* str = strdup(s);
-	char* token = strtok(str, " \t\n\r");
+	char* next_token = NULL;
+	char* token = strtok_s(str, " \t\n\r", &next_token);
 	while (token)
 	{
 		char* elem = strdup(token);
 		list_append(result, elem);
-		token = strtok_s(NULL, " \t\n\r", &token);
+		token = strtok_s(NULL, " \t\n\r", &next_token);
 	}
-
+	printf("\n");
 	free(str);
 	return result;
 }
 
 
 //读cnf文件
-PtrList* read_file(const char* filename)
+PtrList* read_cnf_file(const char* filename)
 {
 	//逐行读取cnf文件
 	PtrList* lines = read_lines(filename);
@@ -43,7 +44,7 @@ PtrList* read_file(const char* filename)
 		if (ch == 'c')
 		{
 			//跳过注释
-			printf("comment\n");
+			//printf("comment\n");
 			continue;
 		}
 		else if (ch == 'p')
@@ -62,17 +63,21 @@ PtrList* read_file(const char* filename)
 		{
 			//处理cnf文件
 			PtrList* ss = str_split(s);
-			PtrList* clause = list_create(100);
-			for (int j = 0; j < ss->size; j++)
+			if (ss->size > 0)
 			{
-				char* v;
-				list_get(ss, j, &v);
-				int literal = atoi(v);
-				list_append_int(clause, literal);
+				PtrList* clause = list_create(100);
+				for (int j = 0; j < ss->size - 1; j++)
+				{
+					char* v;
+					list_get(ss, j, &v);
+					int literal = atoi(v);
+					list_append_int(clause, literal);
+				}
+				list_append(clauses, clause);
 			}
-			list_append(clauses, clause);
 		}
 	}
+
 	for (int i = 0; i < clauses->size; i++)
 	{
 		PtrList* c;
@@ -83,7 +88,9 @@ PtrList* read_file(const char* filename)
 			list_get_int(c, j, &v);
 			printf("%d ", v);
 		}
+		printf("\n");
 	}
+
 	return clauses;
 }
 
@@ -126,7 +133,7 @@ PtrList* assign(int x, PtrList* _clauses)
 		PtrList* clause;
 		list_get(_clauses, i, &clause);
 
-		if (list_element_in_list(clause, &x, compare_int))
+		if (list_int_in_list(clause, x))
 			continue;
 
 		PtrList* new_clause = list_create(clause->capacity);

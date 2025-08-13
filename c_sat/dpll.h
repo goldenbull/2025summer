@@ -2,7 +2,7 @@
 
 PtrList* str_split(const char* s);
 
-PtrList* read_file(const char* filename);
+PtrList* read_cnf_file(const char* filename);
 
 void destroy_clause(void* element);
 

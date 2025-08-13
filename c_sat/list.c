@@ -144,6 +144,18 @@ bool list_element_in_list(PtrList* list, const void* element, comparer comp)
     return false;
 }
 
+bool list_int_in_list(PtrList* list, int val)
+{
+    if (!list) return false;
+
+    for (int j = 0; j < list->size; j++)
+    {
+        if ((int)(int64_t)list->ptrArray[j] == val)
+            return true;
+    }
+
+    return false;
+}
 
 // Ëæ»úµ÷»»Ë³Ðò
 void list_random_shuffle(PtrList* list)

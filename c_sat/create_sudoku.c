@@ -84,7 +84,7 @@ bool is_valid(PtrList* sudoku, int row, int col, int value)
 
 	//检查百分号约束
 	extern PtrList* pcf_centers;
-	for (int k = 0; k < pcf_centers -> size; k++)
+	for (int k = 0; k < pcf_centers->size; k++)
 	{
 		Coordinate* coord;
 		list_get(pcf_centers, k, &coord);
@@ -112,12 +112,12 @@ bool is_valid(PtrList* sudoku, int row, int col, int value)
 		for (int i = 0; i < 9; i++)
 		{
 			int v;
-			sudoku_get_int(sudoku, i, 8-i, &v);
+			sudoku_get_int(sudoku, i, 8 - i, &v);
 			if (v == value)
 				return false;
 		}
 	}
-	
+
 	return true;
 }
 
@@ -170,7 +170,7 @@ PtrList* complete_sudoku(void)
 	for (int i = 0; i < 9; i++)
 	{
 		PtrList* sudoku_row = list_create(9);
-		for(int j=0;j<9;j++)
+		for (int j = 0; j < 9; j++)
 			list_append_int(sudoku_row, 0);
 		list_append(sudoku, sudoku_row);
 	}
@@ -212,10 +212,10 @@ void dig_holes(PtrList* sudoku, int holes)
 //生成挖洞后的数独
 PtrList* create_puzzle()
 {
-	PtrList* my_sudoku = complete_sudoku(); 
+	PtrList* my_sudoku = complete_sudoku();
 
 	//随机挖30-50个洞
-	int holes_num = rand() % (50 - 30 + 1) + 30;  
+	int holes_num = rand() % (50 - 30 + 1) + 30;
 	dig_holes(my_sudoku, holes_num);
 
 	printf("Randomly initialize the Sudoku game layout:\n\n");

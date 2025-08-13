@@ -113,6 +113,8 @@ int compare_abs(const void* a, const void* b)
 
 int main()
 {
+	srand((unsigned int)time(NULL));
+
 	init_sudoku_structures();
 
 	printf("Welcome!\n");
@@ -131,7 +133,7 @@ int main()
 			char filename[1024];
 			printf("Please input a filename : ");
 			scanf_s("%s", filename, (unsigned)_countof(filename));
-			PtrList* cnf_clauses = read_file(filename);
+			PtrList* cnf_clauses = read_cnf_file(filename);
 
 			//计算用时
 			clock_t start_time = clock();
@@ -177,7 +179,7 @@ int main()
 
 			//计算用时
 			char filename2[] = "my_sudoku.cnf";
-			PtrList* cnf_clauses = read_file(filename2);
+			PtrList* cnf_clauses = read_cnf_file(filename2);
 			clock_t start_time2 = clock();
 			PtrList* cur_literals = list_create(10240);
 			PtrList* result = dpll_reduce(cur_literals, cnf_clauses);

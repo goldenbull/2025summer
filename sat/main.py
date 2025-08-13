@@ -36,6 +36,7 @@ while True:
         # 将数独转化为sat并写入cnf文件
         create_sudoku.create_sudoku_txt(my_sudoku)
         filename = "my_sudoku.txt"
+        filename = r"E:\Workspace\2025summer\c_sat\my_sudoku.txt"
         sudoku_to_sat.create_cnf(filename)
         print("sudoku has been written in: my_sudoku.cnf")
 
@@ -68,6 +69,17 @@ while True:
 
         print(f"(time cost: {elapsed:.4f}s)")
 
+    elif op == "3":
+        # filename = r"E:\Workspace\2025summer\c_sat\my_sudoku.txt"
+        # sudoku_to_sat.create_cnf(filename)
+        fname = r"E:\Workspace\2025summer\c_sat\list_cnf.txt"
+        lines = open(fname, "rt").readlines()
+        cnt = dict()
+        for line in lines:
+            ss = line.strip().split()
+            for s in ss:
+                cnt[abs(int(s))] = 0
+        print(len(cnt))
     elif op == "0":
         print("Thank you!")
         break
