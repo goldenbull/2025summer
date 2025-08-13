@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include "list.h"
 
+
 // 创建新的 PtrList
 PtrList* list_create(int capacity)
 {
@@ -21,6 +22,7 @@ PtrList* list_create(int capacity)
     list->size = 0;
     return list;
 }
+
 
 // 销毁 PtrList
 void list_destroy(PtrList* list, destroyer func)
@@ -44,6 +46,7 @@ void list_destroy(PtrList* list, destroyer func)
     }
 }
 
+
 // 追加元素
 void list_append(PtrList* list, void* ptr)
 {
@@ -64,6 +67,7 @@ void list_append(PtrList* list, void* ptr)
     list->size++;
 }
 
+
 // 获取元素
 bool list_get(PtrList* list, int index, void** ret)
 {
@@ -80,14 +84,16 @@ bool list_get(PtrList* list, int index, void** ret)
     return true; // 成功
 }
 
+
 // 追加整型值
 void list_append_int(PtrList* list, int value)
 {
     list_append(list, (void*)(int64_t)value);
 }
 
+
 // 获取整型值
-int list_get_int(PtrList* list, int index, int* ret)
+bool list_get_int(PtrList* list, int index, int* ret)
 {
     void* ptr;
     if (!list_get(list, index, &ptr))
@@ -103,6 +109,14 @@ int list_get_int(PtrList* list, int index, int* ret)
     return true; // 成功
 }
 
+// 设置整型元素
+bool list_set_int(PtrList* list, int index, int value)
+{
+    if (!list || index < 0 || index >= list->size)
+        return false;
+    list->ptrArray[index] = (void*)(int64_t)value;
+    return true;
+}
 
 // 排序
 void list_sort(PtrList* list, comparer comp)
@@ -111,6 +125,8 @@ void list_sort(PtrList* list, comparer comp)
     qsort(list->ptrArray, list->size, sizeof(void*), comp);
 }
 
+
+// 判断元素是否在表内
 bool list_element_in_list(PtrList* list, const void* element, comparer comp)
 {
     if (!list || !element) return false;
@@ -127,3 +143,20 @@ bool list_element_in_list(PtrList* list, const void* element, comparer comp)
 
     return false;
 }
+
+
+// 随机调换顺序
+void list_random_shuffle(PtrList* list)
+{
+    if (!list || list->size <= 1) return;
+
+    for (int i = 0; i < list->size * 10; i++)
+    {
+        int x = rand() % list->size;
+        int y = rand() % list->size;
+        void* temp = list->ptrArray[x];
+        list->ptrArray[x] = list->ptrArray[y];
+        list->ptrArray[y] = temp;
+    }
+}
+

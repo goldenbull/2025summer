@@ -1,19 +1,109 @@
-#include<stdio.h>
-#include<stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "dict.h"
 #include "list.h"
+#include "sudoku.h"
+#include "dpll.h"
+
+//按照空格分割字符串
+PtrList* str_split(const char* s)
+{
+	PtrList* result = list_create(5);
+	if (!s) return result;
+
+	//分割字符串
+	char* str = strdup(s);
+	char* token = strtok(str, " \t\n\r");
+	while (token)
+	{
+		char* elem = strdup(token);
+		list_append(result, elem);
+		token = strtok_s(NULL, " \t\n\r", &token);
+	}
+
+	free(str);
+	return result;
+}
+
+
+//读cnf文件
+PtrList* read_file(const char* filename)
+{
+	//逐行读取cnf文件
+	PtrList* lines = read_lines(filename);
+	PtrList* clauses = list_create(100);
+	for (int i = 0; i < lines->size; i++)
+	{
+		char* s;
+		list_get(lines, i, &s);
+
+		char ch = s[0];
+		if (ch == 'c')
+		{
+			//跳过注释
+			printf("comment\n");
+			continue;
+		}
+		else if (ch == 'p')
+		{
+			//读取文件头
+			PtrList* ss = str_split(s);
+			char* ss2;
+			list_get(ss, 2, &ss2);
+			int literal_cnt = atoi(ss2);
+			char* ss3;
+			list_get(ss, 3, &ss3);
+			int clause_cnt = atoi(ss3);
+			printf("literals count: %d, clauses count: %d\n", literal_cnt, clause_cnt);
+		}
+		else
+		{
+			//处理cnf文件
+			PtrList* ss = str_split(s);
+			PtrList* clause = list_create(100);
+			for (int j = 0; j < ss->size; j++)
+			{
+				char* v;
+				list_get(ss, j, &v);
+				int literal = atoi(v);
+				list_append_int(clause, literal);
+			}
+			list_append(clauses, clause);
+		}
+	}
+	for (int i = 0; i < clauses->size; i++)
+	{
+		PtrList* c;
+		list_get(clauses, i, &c);
+		for (int j = 0; j < c->size; j++)
+		{
+			int v;
+			list_get_int(c, j, &v);
+			printf("%d ", v);
+		}
+	}
+	return clauses;
+}
+
 
 //嵌套PtrList销毁（用于子句列表）
-void destroy_clause(void* element) {
+void destroy_clause(void* element)
+{
 	PtrList* clause = (PtrList*)element;
 	list_destroy(clause, NULL);
 }
 
+
+// 比较KV
 int comp_by_v(const KV* a, const KV* b)
 {
 	return a->value - b->value;
 }
 
+
+//复制子句列表
 PtrList* clone_clause(PtrList* clause)
 {
 	PtrList* new_clause = list_create(clause->size + 1);
@@ -25,6 +115,7 @@ PtrList* clone_clause(PtrList* clause)
 	}
 	return new_clause;
 }
+
 
 //处理赋值的文字
 PtrList* assign(int x, PtrList* _clauses)
@@ -50,6 +141,7 @@ PtrList* assign(int x, PtrList* _clauses)
 	}
 	return new_clauses;
 }
+
 
 //找到出现次数最多的文字
 int find_literal(PtrList* clauses)
@@ -81,6 +173,7 @@ int find_literal(PtrList* clauses)
 	return max_lit;
 }
 
+
 //dpll函数
 PtrList* dpll_reduce(PtrList* cur_literals, PtrList* cur_clauses)
 {
@@ -111,7 +204,7 @@ PtrList* dpll_reduce(PtrList* cur_literals, PtrList* cur_clauses)
 		}
 
 		PtrList* first_clause;
-		list_get(single_litral_clauses, 0, & first_clause);
+		list_get(single_litral_clauses, 0, &first_clause);
 		int single_literal;
 		list_get_int(first_clause, 0, &single_literal);
 		list_destroy(single_litral_clauses, NULL);
@@ -122,7 +215,7 @@ PtrList* dpll_reduce(PtrList* cur_literals, PtrList* cur_clauses)
 		cur_clauses = new_clauses;
 
 		//判断是否结束
-		if (cur_clauses->size==0)
+		if (cur_clauses->size == 0)
 			return cur_literals;
 		bool found_empty_clause = false;
 		for (int i = 0; i < cur_clauses->size; i++)
@@ -140,7 +233,7 @@ PtrList* dpll_reduce(PtrList* cur_literals, PtrList* cur_clauses)
 	}
 
 	//判断是否结束
-	if (cur_clauses->size==0)
+	if (cur_clauses->size == 0)
 		return cur_literals;
 	bool found_empty_clause = false;
 	for (int i = 0; i < cur_clauses->size; i++)
@@ -166,7 +259,7 @@ PtrList* dpll_reduce(PtrList* cur_literals, PtrList* cur_clauses)
 	PtrList* result = dpll_reduce(new_literals_true, reduced_clauses_true);
 	if (result != NULL)
 	{
-		list_destroy(new_literals_true,NULL);
+		list_destroy(new_literals_true, NULL);
 		list_destroy(reduced_clauses_true, destroy_clause);
 		return result;
 	}

@@ -2,9 +2,11 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <math.h>
+
 #include "dict.h"
 #include "list.h"
 #include "sudoku.h"
+#include "sudoku_to_sat.h"
 
 PtrList* rows = NULL;
 PtrList* cols = NULL;
@@ -12,6 +14,7 @@ PtrList* boxes = NULL;
 PtrList* pcf_centers = NULL;
 PtrList* pcf_boxes = NULL;
 PtrList* cross_line = NULL;
+
 
 //初始化数独结构
 void init_sudoku_structures()
@@ -62,6 +65,7 @@ void init_sudoku_structures()
 }
 
 
+// 将数独文件转为cnf文件
 void create_cnf(char* filename)
 {
     //逐行读取数独文件
@@ -151,35 +155,63 @@ void create_cnf(char* filename)
         PtrList* temp4 = list_create(3);
         list_get(cur_numbers, i, &temp4);
         int x, y, v;
-        list_get(temp4, 0, &x);
-        list_get(temp4, 1, &y);
-        list_get(temp4, 2, &v);
+        list_get_int(temp4, 0, &x);
+        list_get_int(temp4, 1, &y);
+        list_get_int(temp4, 2, &v);
         PtrList* temp5 = list_create(1);
         list_append_int(temp5, 100 * (x + 1) + 10 * (y + 1) + v);
         list_append(list_cnf, temp5);
     }
 
-    //收集所有文字并去重
+    //文字去重，存入literals中
     PtrList* literals = list_create(100);
     for (int i = 0; i < list_cnf->size; i++)
     {
-        PtrList* cnf = list_cnf->ptrArray[i];
+        PtrList* cnf;
+        list_get(list_cnf, i, &cnf);
         for (int j = 0; j < cnf->size; j++)
         {
-            int v = (int)(int64_t)cnf->ptrArray[j];
+            int v;
+            list_get_int(cnf,j,&v);
             int abs_v = abs(v);
-
-            bool exist = false;
-            for (int k = 0; k < literals->size; k++)
-            {
-                if ((int)(int64_t)literals->ptrArray[k] == abs_v)
-                {
-                    exist = true;
-                    break;
-                }
-            }
+            bool exist = list_element_in_list(literals, (void*)(intptr_t)abs_v,compare_int);
             if (!exist)
                 list_append_int(literals, abs_v);
         }
     }
+
+    //语句去重，存入sorted_clauses中
+    PtrList* sorted_clauses = list_create(list_cnf->capacity);
+    for (int i = 0; i < list_cnf->size; i++)
+    {
+        PtrList* clause;
+        list_get(list_cnf, i, &clause);
+        list_sort(clause,compare_int);
+        bool exist = list_element_in_list(sorted_clauses, &clause, compare_int_list);
+        if (!exist)
+            list_append(sorted_clauses, clause);
+    }
+
+    //生成cnf文件
+    FILE* fout = fopen("my_sudoku.cnf", "wt");
+    if (!fout)
+    {
+        printf("无法打开文件");
+        return;
+    }
+    fprintf(fout, "c sudoku output\n");
+    fprintf(fout, "p cnf %d %d\n", literals->size, sorted_clauses->size);  //注释和文件头
+    for (int i = 0; i < sorted_clauses->size; i++)
+    {
+        PtrList* clause;
+        list_get(sorted_clauses, i, &clause);
+        for (int j = 0; j < clause->size; j++)
+        {
+            int l;
+            list_get_int(clause, j, &l);
+            fprintf(fout, "%d ", l);
+        }
+        fprintf(fout, "0\n");
+    }
+    fclose(fout);
 }

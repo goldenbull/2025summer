@@ -35,7 +35,7 @@ PtrList* read_lines(const char* filename)
         return NULL;
     }
     
-    PtrList* lines = list_create(10);
+    PtrList* lines = list_create(100);
     if (!lines) return NULL;
 
     char content[10240];
@@ -46,7 +46,7 @@ PtrList* read_lines(const char* filename)
     }
     if (ferror(file))
     {
-        perror("文件读取错误");
+        printf("文件读取错误");
         list_destroy(lines, free);
         lines = NULL;
     }
@@ -65,4 +65,33 @@ void append_coordiante(PtrList* coordinates, int row, int col)
     c->row = row;
     c->col = col;
     list_append(coordinates, c);
+}
+
+
+
+//获取数独矩阵中的元素
+bool sudoku_get_int(PtrList* sudoku, int i, int j, int* ret)
+{
+    if (!sudoku || i < 0 || i >= sudoku->size || j < 0 || j >= sudoku->size)
+        return false;
+    if (ret)
+    {
+        PtrList* temp;
+        list_get(sudoku, i, &temp);
+        list_get_int(temp, j, ret);
+        return true;
+    }
+    return false;
+}
+
+
+//给数独矩阵赋值
+bool sudoku_set_int(PtrList* sudoku, int i, int j, int value)
+{
+    if (!sudoku || i < 0 || i >= sudoku->size || j < 0 || j >= sudoku->size)
+        return false;
+    PtrList* row;
+    if (!list_get(sudoku, i, &row))
+        return false;
+    return list_set_int(row, j, value);
 }

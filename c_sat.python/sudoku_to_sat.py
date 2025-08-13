@@ -40,7 +40,7 @@ def create_cnf(filename):
     for x, y, v in cur_numbers:
         list_cnf.append([100 * (x + 1) + 10 * (y + 1) + v])
 
-    # 输出到cnf文件
+    # 文字去重，存入literals中
     literals = []
     for cnf in list_cnf:
         for v in cnf:
@@ -48,13 +48,14 @@ def create_cnf(filename):
             if abs_v not in literals:
                 literals.append(abs_v)
 
+    # 语句去重，存入sorted_clauses中
     temp_clauses = []
     for clause in list_cnf:
         sorted_clause = sorted(clause)
         if sorted_clause not in temp_clauses:
             temp_clauses.append(sorted_clause)
-    sorted(temp_clauses)
 
+    # 生成cnf文件
     fout = open("my_sudoku.cnf", "wt")
     fout.write("c sudoku output\n")
     fout.write(f"p cnf {len(literals)} {len(temp_clauses)}\n")

@@ -39,7 +39,7 @@ cross_line.append(s_cross_line)
 
 
 # 打印棋盘
-def print_borad(sudoku: list[list[int]]):
+def print_board(sudoku: list[list[int]]):
     print("=" * 21)
     for i in range(9):
         if i % 3 == 0 and i != 0:
@@ -141,7 +141,7 @@ def create_puzzle():
     holes_num = random.randint(30, 50)
     dig_holes(my_sudoku, holes_num)
     print("Randomly initialize the Sudoku game layout:")
-    print_borad(my_sudoku)
+    print_board(my_sudoku)
     return my_sudoku
 
 

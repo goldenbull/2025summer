@@ -62,7 +62,7 @@ while True:
                 if 0 <= row < 9 and 0 <= col < 9:
                     matrix[row][col] = value
 
-            create_sudoku.print_borad(matrix)
+            create_sudoku.print_board(matrix)
         else:
             print("No solution found!")
 
