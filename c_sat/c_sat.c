@@ -162,7 +162,6 @@ int main()
 
 			list_destroy(cur_literals, NULL);
 		}
-
 		else if (op == 2)
 		{
 			//输入2——随机生成百分号数独并求解
@@ -175,6 +174,8 @@ int main()
 
 			//将数独转化为sat并写入cnf文件
 			create_sudoku_txt(my_sudoku);
+			list_destroy(my_sudoku, destroy_clause);
+
 			char filename[] = "my_sudoku.txt";
 			create_cnf(filename);
 			printf("sudoku has been written in: my_sudoku.cnf\n");
@@ -230,25 +231,26 @@ int main()
 				print_board(matrix);
 				printf("\n");
 				list_destroy(matrix, destroy_clause);
+				list_destroy(result, NULL);
 			}
-
 			else
 				printf("No solution found!\n");
 
 			printf("(time cost: %.4f s)\n", elapsed2);
 
 			list_destroy(cur_literals, NULL);
+			list_destroy(cnf_clauses, destroy_clause);
 		}
-
-		//输入0——退出程序
 		else if (op == 0)
 		{
+			//输入0——退出程序
 			printf("Thank you!\n");
 			break;
 		}
-
-		//其他不合法输入
 		else
+		{
+			//其他不合法输入
 			printf("Invalid input!\n");
+		}
 	}
 }

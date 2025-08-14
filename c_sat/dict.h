@@ -5,16 +5,16 @@
 
 typedef struct
 {
-    int key;
-    int value;
+	int key;
+	int value;
 } KV;
 
 int hash(int x);
 
 typedef struct
 {
-    PtrList** buckets;
-    int bucket_cnt;
+	PtrList** buckets;
+	int bucket_cnt;
 } Dict;
 
 Dict* dict_create(int bucket_cnt);

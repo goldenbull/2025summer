@@ -4,8 +4,8 @@
 
 typedef struct
 {
-    int row;
-    int col;
+	int row;
+	int col;
 } Coordinate;
 
 PtrList* get_box(int r, int c);

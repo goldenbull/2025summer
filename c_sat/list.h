@@ -37,7 +37,8 @@ bool list_int_in_list(PtrList* list, int val);
 
 void list_random_shuffle(PtrList* list);
 
-inline int compare_int(const void* a, const void* b) {
+inline int compare_int(const void* a, const void* b)
+{
 	int ia = (int)(int64_t)(*(void**)a);  // 直接转换指针值为整数
 	int ib = (int)(int64_t)(*(void**)b);
 	if (ia < ib) return -1;
@@ -49,7 +50,7 @@ inline int compare_int_list(const PtrList* a, const PtrList* b)
 {
 	if (a == NULL || b == NULL) return false;
 
-	int compare_size = min(a->size , b->size);
+	int compare_size = min(a->size, b->size);
 	for (int i = 0; i < compare_size; i++)
 	{
 		int va = (int)(int64_t)a->ptrArray[i];

@@ -3,8 +3,9 @@
 #include <stdint.h>
 #include <math.h>
 
-#include "dict.h"
 #include "list.h"
+#include "dict.h"
+#include "dpll.h"
 #include "sudoku.h"
 #include "sudoku_to_sat.h"
 
@@ -232,4 +233,9 @@ void create_cnf(char* filename)
 		fprintf(fout, "0\n");
 	}
 	fclose(fout);
+
+	list_destroy(lines, free);
+	list_destroy(literals, NULL);
+	list_destroy(list_cnf, destroy_clause);
+	list_destroy(sorted_clauses, NULL);
 }

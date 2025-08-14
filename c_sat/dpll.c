@@ -124,13 +124,13 @@ PtrList* clone_clauses(PtrList* clauses)
 
 
 //处理赋值的文字
-PtrList* assign(int x, PtrList* _clauses)
+PtrList* assign(int x, PtrList* clauses)
 {
-	PtrList* new_clauses = list_create(_clauses->capacity);
-	for (int i = 0; i < _clauses->size; i++)
+	PtrList* new_clauses = list_create(clauses->capacity);
+	for (int i = 0; i < clauses->size; i++)
 	{
 		PtrList* clause;
-		list_get(_clauses, i, &clause);
+		list_get(clauses, i, &clause);
 
 		if (list_int_in_list(clause, x))
 			continue;
@@ -182,8 +182,9 @@ int find_literal(PtrList* clauses)
 
 
 //dpll函数
-PtrList* dpll_reduce(PtrList* cur_literals, PtrList* _cur_clauses)
+PtrList* dpll_reduce(PtrList* _cur_literals, PtrList* _cur_clauses)
 {
+	PtrList* cur_literals = clone_clause(_cur_literals);
 	PtrList* cur_clauses = clone_clauses(_cur_clauses);
 
 	//通过单子句规则化简
@@ -246,6 +247,7 @@ PtrList* dpll_reduce(PtrList* cur_literals, PtrList* _cur_clauses)
 		if (found_empty_clause)
 		{
 			list_destroy(cur_clauses, destroy_clause);
+			list_destroy(cur_literals, NULL);
 			return NULL;
 		}
 	}
@@ -271,6 +273,7 @@ PtrList* dpll_reduce(PtrList* cur_literals, PtrList* _cur_clauses)
 	if (found_empty_clause)
 	{
 		list_destroy(cur_clauses, destroy_clause);
+		list_destroy(cur_literals, NULL);
 		return NULL;
 	}
 
@@ -286,6 +289,7 @@ PtrList* dpll_reduce(PtrList* cur_literals, PtrList* _cur_clauses)
 	{
 		list_destroy(new_literals_true, NULL);
 		list_destroy(reduced_clauses_true, destroy_clause);
+		list_destroy(cur_literals, NULL);
 		return result;
 	}
 	list_destroy(new_literals_true, NULL);
@@ -298,5 +302,7 @@ PtrList* dpll_reduce(PtrList* cur_literals, PtrList* _cur_clauses)
 	result = dpll_reduce(new_literals_false, reduced_clauses_false);
 	list_destroy(new_literals_false, NULL);
 	list_destroy(reduced_clauses_false, destroy_clause);
+
+	list_destroy(cur_literals, NULL);
 	return result;
 }

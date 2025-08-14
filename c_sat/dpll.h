@@ -17,3 +17,5 @@ PtrList* assign(int x, PtrList* _clauses);
 int find_literal(PtrList* clauses);
 
 PtrList* dpll_reduce(PtrList* cur_literals, PtrList* cur_clauses);
+
+void destroy_clause(void* element);
