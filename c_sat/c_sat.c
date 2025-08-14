@@ -103,7 +103,7 @@ int main(void)
 }
 */
 
-int compare_abs(const void* a, const void* b) 
+int compare_abs(const void* a, const void* b)
 {
 	int ia = abs(*(const int*)a);
 	int ib = abs(*(const int*)b);
@@ -127,9 +127,9 @@ int main()
 		scanf_s("%d", &op);
 		printf("\n");
 
-		//输入1——读取cnf文件并计算结果
 		if (op == 1)
 		{
+			//输入1——读取cnf文件并计算结果
 			char filename[1024];
 			printf("Please input a filename : ");
 			scanf_s("%s", filename, (unsigned)_countof(filename));
@@ -159,11 +159,13 @@ int main()
 				printf("No solution found!\n");
 
 			printf("(time cost: %.4f s)", elapsed);
+
+			list_destroy(cur_literals, NULL);
 		}
 
-		//输入2——随机生成百分号数独并求解
 		else if (op == 2)
 		{
+			//输入2——随机生成百分号数独并求解
 			//随机初始化数独游戏格局
 			clock_t start_time = clock();
 			PtrList* my_sudoku = create_puzzle();
@@ -175,7 +177,7 @@ int main()
 			create_sudoku_txt(my_sudoku);
 			char filename[] = "my_sudoku.txt";
 			create_cnf(filename);
-			printf("sudoku has been written in: my_sudoku.cnf");
+			printf("sudoku has been written in: my_sudoku.cnf\n");
 
 			//计算用时
 			char filename2[] = "my_sudoku.cnf";
@@ -184,7 +186,7 @@ int main()
 			PtrList* cur_literals = list_create(10240);
 			PtrList* result = dpll_reduce(cur_literals, cnf_clauses);
 			clock_t end_time2 = clock();
-			double elapsed2 = (double)(end_time - start_time) / CLOCKS_PER_SEC;
+			double elapsed2 = (double)(end_time2 - start_time2) / CLOCKS_PER_SEC;
 
 			//输出结果
 			if (result)
@@ -203,7 +205,7 @@ int main()
 						list_append_int(new_result, x);
 					}
 				}
-				printf("\n");
+				printf("\n\n");
 
 				//初始化数独矩阵
 				PtrList* matrix = list_create(9);
@@ -221,29 +223,32 @@ int main()
 					int num;
 					list_get_int(new_result, i, &num);
 					int row = num / 100 - 1;
-					int col = (num / 100) % 10 - 1;
+					int col = (num / 10) % 10 - 1;
 					int value = num % 10;
 					sudoku_set_int(matrix, row, col, value);
 				}
 				print_board(matrix);
 				printf("\n");
+				list_destroy(matrix, destroy_clause);
 			}
 
 			else
 				printf("No solution found!\n");
 
-			printf("(time cost: %.4f s)", elapsed2);
+			printf("(time cost: %.4f s)\n", elapsed2);
+
+			list_destroy(cur_literals, NULL);
 		}
 
 		//输入0——退出程序
 		else if (op == 0)
 		{
-			printf("Thank you!");
+			printf("Thank you!\n");
 			break;
 		}
 
 		//其他不合法输入
 		else
-			printf("Invalid input!");
+			printf("Invalid input!\n");
 	}
 }

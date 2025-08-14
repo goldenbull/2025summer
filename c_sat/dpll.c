@@ -23,7 +23,6 @@ PtrList* str_split(const char* s)
 		list_append(result, elem);
 		token = strtok_s(NULL, " \t\n\r", &next_token);
 	}
-	printf("\n");
 	free(str);
 	return result;
 }
@@ -44,7 +43,6 @@ PtrList* read_cnf_file(const char* filename)
 		if (ch == 'c')
 		{
 			//跳过注释
-			//printf("comment\n");
 			continue;
 		}
 		else if (ch == 'p')
@@ -57,7 +55,7 @@ PtrList* read_cnf_file(const char* filename)
 			char* ss3;
 			list_get(ss, 3, &ss3);
 			int clause_cnt = atoi(ss3);
-			printf("literals count: %d, clauses count: %d\n", literal_cnt, clause_cnt);
+			printf("literals count: %d, clauses count: %d\n\n", literal_cnt, clause_cnt);
 		}
 		else
 		{
@@ -76,19 +74,6 @@ PtrList* read_cnf_file(const char* filename)
 				list_append(clauses, clause);
 			}
 		}
-	}
-
-	for (int i = 0; i < clauses->size; i++)
-	{
-		PtrList* c;
-		list_get(clauses, i, &c);
-		for (int j = 0; j < c->size; j++)
-		{
-			int v;
-			list_get_int(c, j, &v);
-			printf("%d ", v);
-		}
-		printf("\n");
 	}
 
 	return clauses;
@@ -110,7 +95,7 @@ int comp_by_v(const KV* a, const KV* b)
 }
 
 
-//复制子句列表
+//复制子句
 PtrList* clone_clause(PtrList* clause)
 {
 	PtrList* new_clause = list_create(clause->size + 1);
@@ -121,6 +106,20 @@ PtrList* clone_clause(PtrList* clause)
 		list_append_int(new_clause, lit);
 	}
 	return new_clause;
+}
+
+
+//复制子句列表
+PtrList* clone_clauses(PtrList* clauses)
+{
+	PtrList* new_clauses = list_create(clauses->size + 1);
+	for (int i = 0; i < clauses->size; i++)
+	{
+		PtrList* c;
+		list_get(clauses, i, &c);
+		list_append(new_clauses, clone_clause(c));
+	}
+	return new_clauses;
 }
 
 
@@ -142,12 +141,13 @@ PtrList* assign(int x, PtrList* _clauses)
 			int l;
 			list_get_int(clause, j, &l);
 			if (l != -x)
-				list_append_int(new_clauses, l);
+				list_append_int(new_clause, l);
 		}
 		list_append(new_clauses, new_clause);
 	}
 	return new_clauses;
 }
+
 
 
 //找到出现次数最多的文字
@@ -182,12 +182,16 @@ int find_literal(PtrList* clauses)
 
 
 //dpll函数
-PtrList* dpll_reduce(PtrList* cur_literals, PtrList* cur_clauses)
+PtrList* dpll_reduce(PtrList* cur_literals, PtrList* _cur_clauses)
 {
+	PtrList* cur_clauses = clone_clauses(_cur_clauses);
+
 	//通过单子句规则化简
-	while (1)
+	int loop_counter = 0;
+	while (true)
 	{
 		bool found = false;
+
 		for (int i = 0; i < cur_clauses->size; i++)
 		{
 			PtrList* c;
@@ -223,7 +227,11 @@ PtrList* dpll_reduce(PtrList* cur_literals, PtrList* cur_clauses)
 
 		//判断是否结束
 		if (cur_clauses->size == 0)
+		{
+			list_destroy(cur_clauses, destroy_clause);
 			return cur_literals;
+		}
+
 		bool found_empty_clause = false;
 		for (int i = 0; i < cur_clauses->size; i++)
 		{
@@ -236,12 +244,19 @@ PtrList* dpll_reduce(PtrList* cur_literals, PtrList* cur_clauses)
 			}
 		}
 		if (found_empty_clause)
+		{
+			list_destroy(cur_clauses, destroy_clause);
 			return NULL;
+		}
 	}
 
 	//判断是否结束
 	if (cur_clauses->size == 0)
+	{
+		list_destroy(cur_clauses, destroy_clause);
 		return cur_literals;
+	}
+
 	bool found_empty_clause = false;
 	for (int i = 0; i < cur_clauses->size; i++)
 	{
@@ -254,7 +269,10 @@ PtrList* dpll_reduce(PtrList* cur_literals, PtrList* cur_clauses)
 		}
 	}
 	if (found_empty_clause)
+	{
+		list_destroy(cur_clauses, destroy_clause);
 		return NULL;
+	}
 
 	//选择文字赋值
 	int next_lit = find_literal(cur_clauses);

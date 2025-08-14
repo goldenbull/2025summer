@@ -35,7 +35,7 @@ void list_destroy(PtrList* list, destroyer func)
             {
                 for (size_t i = 0; i < list->size; i++)
                 {
-                    printf("ptrArray[%zu] = %p\n", i, list->ptrArray[i]);
+                    //printf("ptrArray[%zu] = %p\n", i, list->ptrArray[i]);
                     func(list->ptrArray[i]);
                 }
             }

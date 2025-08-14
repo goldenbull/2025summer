@@ -145,7 +145,6 @@ void create_cnf(char* filename)
 				list_append_int(temp3, j);
 				list_append_int(temp3, c - '0');
 				list_append(cur_numbers, temp3);
-				printf("%d %d %d\n", i, j, c);
 			}
 		}
 	}

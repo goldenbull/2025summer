@@ -149,11 +149,16 @@ bool solve_sudoku(PtrList* sudoku)
 					{
 						sudoku_set_int(sudoku, row - 1, col - 1, value);
 						if (solve_sudoku(sudoku))
+						{
+							list_destroy(numbers, NULL);
 							return true;
+						}
 						else
 							sudoku_set_int(sudoku, row - 1, col - 1, 0);
 					}
 				}
+
+				list_destroy(numbers, NULL);
 				return false;
 			}
 		}

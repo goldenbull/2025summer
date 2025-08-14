@@ -10,6 +10,8 @@ int comp_by_v(const KV* a, const KV* b);
 
 PtrList* clone_clause(PtrList* clause);
 
+PtrList* clone_clauses(PtrList* clauses);
+
 PtrList* assign(int x, PtrList* _clauses);
 
 int find_literal(PtrList* clauses);
