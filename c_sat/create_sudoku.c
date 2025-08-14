@@ -235,7 +235,6 @@ void create_sudoku_txt(PtrList* my_sudoku)
     FILE* fout = fopen("my_sudoku.txt", "wt");
 
     // п╢нд╪Ч
-    PtrList* sudoku_list = list_create(81);
     for (int i = 0; i < 9; i++)
     {
         for (int j = 0; j < 9; j++)

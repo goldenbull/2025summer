@@ -211,6 +211,8 @@ void create_cnf(char* filename)
     }
     list_sort(sorted_clauses, compare_int_list_qsort);
 
+    list_destroy(lines, free);
+
     //生成cnf文件
     FILE* fout = fopen("my_sudoku.cnf", "wt");
     if (!fout)
@@ -234,7 +236,6 @@ void create_cnf(char* filename)
     }
     fclose(fout);
 
-    list_destroy(lines, free);
     list_destroy(literals, NULL);
     list_destroy(list_cnf, destroy_clause);
     list_destroy(sorted_clauses, NULL);

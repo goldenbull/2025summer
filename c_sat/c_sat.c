@@ -1,5 +1,8 @@
-﻿#include <stdio.h>
+﻿#define _CRTDBG_MAP_ALLOC
+
 #include <stdlib.h>
+#include <crtdbg.h>
+#include <stdio.h>
 #include <stdint.h>
 #include <time.h>
 
@@ -253,4 +256,6 @@ int main()
             printf("Invalid input!\n");
         }
     }
+
+    _CrtDumpMemoryLeaks();
 }

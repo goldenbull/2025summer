@@ -56,6 +56,7 @@ PtrList* read_cnf_file(const char* filename)
             list_get(ss, 3, &ss3);
             int clause_cnt = atoi(ss3);
             printf("literals count: %d, clauses count: %d\n\n", literal_cnt, clause_cnt);
+            list_destroy(ss, free);
         }
         else
         {
@@ -73,9 +74,11 @@ PtrList* read_cnf_file(const char* filename)
                 }
                 list_append(clauses, clause);
             }
+            list_destroy(ss, free);
         }
     }
 
+    list_destroy(lines, free);
     return clauses;
 }
 
@@ -187,7 +190,7 @@ PtrList* dpll_reduce(PtrList* _cur_literals, PtrList* _cur_clauses)
     PtrList* cur_clauses = clone_clauses(_cur_clauses);
 
     //通过单子句规则化简
-    int loop_counter = 0;
+    //int loop_counter = 0;
     while (true)
     {
         bool found = false;
